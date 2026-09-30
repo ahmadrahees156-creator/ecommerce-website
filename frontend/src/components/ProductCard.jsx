@@ -1,7 +1,16 @@
-function ProductCard( { name ,description,price}) {
+function ProductCard({ name, description, price, image }) {
   return (
     <div className="border rounded-lg p-4">
-      <div className="h-48 bg-gray-200 rounded-md mb-4"></div>
+      <img
+        src={image}
+        alt={name}
+        style={{
+          width: '120px',
+          height: '120px',
+          objectFit: 'contain',
+        }}
+        className="mb-4"
+      />
 
       <h2 className="text-xl font-semibold">
         {name}
@@ -12,7 +21,7 @@ function ProductCard( { name ,description,price}) {
       </p>
 
       <p className="text-lg font-bold mt-3">
-        {price}
+        ₹{price}
       </p>
 
       <button className="mt-4 w-full bg-black text-white py-2 rounded-md">

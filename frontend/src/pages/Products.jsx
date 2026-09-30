@@ -1,5 +1,9 @@
 import ProductCard from '../components/ProductCard'
 
+import laptop from '../assets/laptop.jpg'
+import headphones from '../assets/headphone.jpg'
+import smartwatch from '../assets/smartwatch.jpg'
+
 function Products() {
   return (
     <main className="min-h-screen p-6">
@@ -8,20 +12,25 @@ function Products() {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ProductCard 
-        name ="Laptop"
-        description ="Powerful Laptop for everyday use"
-        price ="99999" 
+        <ProductCard
+          name="Laptop"
+          description="Powerful laptop for everyday use"
+          price="59999"
+          image={laptop}
         />
-          <ProductCard 
-        name ="Headphones"
-        description ="Wireless headphones with clear sound"
-        price ="2999" 
-        /> 
-         <ProductCard 
-        name ="Smart Watch"
-        description ="Smart watch with fitness tracking"
-        price ="3999" 
+
+        <ProductCard
+          name="Headphones"
+          description="Wireless headphones with clear sound"
+          price="1999"
+          image={headphones}
+        />
+
+        <ProductCard
+          name="Smart Watch"
+          description="Smart watch with fitness tracking"
+          price="2999"
+          image={smartwatch}
         />
       </div>
     </main>
