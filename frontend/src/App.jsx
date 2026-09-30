@@ -1,19 +1,20 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import Home from './pages/Home'
+import Products from './pages/Products'
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
       <Navbar />
 
-      <div className="min-h-screen flex items-center justify-center">
-        <h1 className="text-4xl font-bold">
-          E-Commerce Website
-        </h1>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
 
       <Footer />
-    </>
+    </BrowserRouter>
   )
 }
 
