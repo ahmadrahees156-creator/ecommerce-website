@@ -1,4 +1,6 @@
-function ProductCard({ name, description, price, image }) {
+import { Link } from 'react-router-dom'
+
+function ProductCard({ id, name, description, price, image }) {
   return (
     <div className="border rounded-lg p-4">
       <img
@@ -24,7 +26,14 @@ function ProductCard({ name, description, price, image }) {
         ₹{price}
       </p>
 
-      <button className="mt-4 w-full bg-black text-white py-2 rounded-md">
+      <Link
+        to={`/products/${id}`}
+        className="block mt-4 w-full bg-black text-white py-2 rounded-md text-center"
+      >
+        View Details
+      </Link>
+
+      <button className="mt-2 w-full border py-2 rounded-md">
         Add to Cart
       </button>
     </div>

@@ -13,6 +13,7 @@ function Products() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <ProductCard
+        id ="1"
           name="Laptop"
           description="Powerful laptop for everyday use"
           price="59999"
@@ -20,6 +21,7 @@ function Products() {
         />
 
         <ProductCard
+        id="2"
           name="Headphones"
           description="Wireless headphones with clear sound"
           price="1999"
@@ -27,6 +29,7 @@ function Products() {
         />
 
         <ProductCard
+        id="3"
           name="Smart Watch"
           description="Smart watch with fitness tracking"
           price="2999"
