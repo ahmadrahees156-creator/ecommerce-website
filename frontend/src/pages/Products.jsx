@@ -7,6 +7,8 @@ import smartwatch from '../assets/smartwatch.jpg'
 
 function Products() {
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('all')
+  const [sortBy, setSortBy] = useState('default')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -17,6 +19,7 @@ function Products() {
       description: 'Powerful laptop for everyday use',
       price: '59999',
       image: laptop,
+      category: 'laptops-computers',
     },
     {
       id: '2',
@@ -24,6 +27,7 @@ function Products() {
       description: 'Wireless headphones with clear sound',
       price: '1999',
       image: headphones,
+      category: 'audio-headphones',
     },
     {
       id: '3',
@@ -31,17 +35,59 @@ function Products() {
       description: 'Smart watch with fitness tracking',
       price: '2999',
       image: smartwatch,
+      category: 'smartwatches-wearables',
     },
   ]
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const categories = [
+    { label: 'All Products', value: 'all' },
+    { label: 'Laptops & Computers', value: 'laptops-computers' },
+    { label: 'Audio & Headphones', value: 'audio-headphones' },
+    { label: 'Smartwatches & Wearables', value: 'smartwatches-wearables' },
+    { label: 'Mobiles & Tablets', value: 'mobiles-tablets' },
+    { label: 'Gaming', value: 'gaming' },
+    { label: 'Accessories', value: 'accessories' },
+    { label: 'Cameras & Accessories', value: 'cameras-accessories' },
+  ]
+
+  const filteredProducts = products
+    .filter((product) => {
+      const searchText = search.trim().toLowerCase()
+
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchText) ||
+        product.description.toLowerCase().includes(searchText)
+
+      const matchesCategory =
+        category === 'all' || product.category === category
+
+      return matchesSearch && matchesCategory
+    })
+    .sort((a, b) => {
+      if (sortBy === 'price-low') {
+        return Number(a.price) - Number(b.price)
+      }
+
+      if (sortBy === 'price-high') {
+        return Number(b.price) - Number(a.price)
+      }
+
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name)
+      }
+
+      return 0
+    })
+
+  const clearFilters = () => {
+    setSearch('')
+    setCategory('all')
+    setSortBy('default')
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Products
@@ -52,20 +98,43 @@ function Products() {
           </p>
         </div>
 
-        <div className="mb-8">
-          <div className="relative max-w-xl">
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="relative">
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search by name or description..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 pr-12 text-slate-900 outline-none placeholder:text-slate-400 transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
+              className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
             />
 
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg">
               🔍
             </span>
           </div>
+
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+          >
+            {categories.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+          >
+            <option value="default">Sort: Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name">Name: A to Z</option>
+          </select>
         </div>
 
         {loading && (
@@ -82,6 +151,21 @@ function Products() {
 
         {!loading && !error && (
           <>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Showing {filteredProducts.length} of {products.length} products
+              </p>
+
+              {(search || category !== 'all' || sortBy !== 'default') && (
+                <button
+                  onClick={clearFilters}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredProducts.map((product) => (
@@ -102,13 +186,19 @@ function Products() {
                 </p>
 
                 <p className="mt-2 text-slate-500 dark:text-slate-400">
-                  Try searching with a different product name.
+                  Try another search or select a different category.
                 </p>
+
+                <button
+                  onClick={clearFilters}
+                  className="mt-5 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                >
+                  Clear Filters
+                </button>
               </div>
             )}
           </>
         )}
-
       </div>
     </main>
   )
