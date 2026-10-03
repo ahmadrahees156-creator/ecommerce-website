@@ -1,7 +1,7 @@
 import { useCart } from '../context/CartContext'
 
 function Cart() {
-  const { cart } = useCart()
+  const { cart, removeFromCart } = useCart()
 
   return (
     <main className="min-h-screen p-6">
@@ -33,7 +33,7 @@ function Cart() {
                   }}
                 />
 
-                <div>
+                <div className="flex-1">
                   <h2 className="text-xl font-semibold">
                     {product.name}
                   </h2>
@@ -46,6 +46,13 @@ function Cart() {
                     ₹{product.price}
                   </p>
                 </div>
+
+                <button
+                  onClick={() => removeFromCart(product.id)}
+                  className="border border-red-500 text-red-500 px-4 py-2 rounded-md"
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
