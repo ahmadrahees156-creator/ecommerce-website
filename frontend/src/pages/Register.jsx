@@ -4,9 +4,32 @@ function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    setError('')
+    setSuccess('')
+
+    if (!name || !email || !password || !confirmPassword) {
+      setError('Please fill all fields')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    setSuccess('Registration form is valid')
 
     console.log({
       name,
@@ -24,6 +47,18 @@ function Register() {
         <h1 className="text-3xl font-bold mb-6">
           Create Account
         </h1>
+
+        {error && (
+          <p className="text-red-500 mb-4">
+            {error}
+          </p>
+        )}
+
+        {success && (
+          <p className="text-green-600 mb-4">
+            {success}
+          </p>
+        )}
 
         <input
           type="text"
@@ -46,6 +81,14 @@ function Register() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full border rounded-md px-4 py-2 mb-4"
+        />
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className="w-full border rounded-md px-4 py-2 mb-4"
         />
 
