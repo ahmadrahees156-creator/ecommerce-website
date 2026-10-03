@@ -1,7 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
-function ProductCard({ id, name, description, price, image }) {
+function ProductCard({
+  id,
+  name,
+  description,
+  price,
+  image,
+}) {
   const { addToCart } = useCart()
 
   const product = {
@@ -13,43 +19,55 @@ function ProductCard({ id, name, description, price, image }) {
   }
 
   return (
-    <div className="border rounded-lg p-4">
-      <img
-        src={image}
-        alt={name}
-        style={{
-          width: '120px',
-          height: '120px',
-          objectFit: 'contain',
-        }}
-        className="mb-4"
-      />
+    <div className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
 
-      <h2 className="text-xl font-semibold">
-        {name}
-      </h2>
+      <div className="flex h-64 items-center justify-center bg-slate-100 p-6 dark:bg-slate-800">
+        <img
+          src={image}
+          alt={name}
+          className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+        />
+      </div>
 
-      <p className="text-gray-600 mt-2">
-        {description}
-      </p>
+      <div className="p-5">
 
-      <p className="text-lg font-bold mt-3">
-        ₹{price}
-      </p>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+          {name}
+        </h2>
 
-      <Link
-        to={`/products/${id}`}
-        className="block mt-4 w-full bg-black text-white py-2 rounded-md text-center"
-      >
-        View Details
-      </Link>
+        <p className="mt-2 min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-400">
+          {description}
+        </p>
 
-      <button
-        onClick={() => addToCart(product)}
-        className="mt-2 w-full border py-2 rounded-md"
-      >
-        Add to Cart
-      </button>
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-xl font-bold text-slate-900 dark:text-white">
+            ₹{price}
+          </p>
+
+          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-950/50 dark:text-green-400">
+            In Stock
+          </span>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+
+          <Link
+            to={`/products/${id}`}
+            className="rounded-xl border border-slate-300 px-3 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            View Details
+          </Link>
+
+          <button
+            onClick={() => addToCart(product)}
+            className="rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-95"
+          >
+            Add to Cart
+          </button>
+
+        </div>
+
+      </div>
     </div>
   )
 }
