@@ -7,6 +7,8 @@ import smartwatch from '../assets/smartwatch.jpg'
 
 function Products() {
   const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const products = [
     {
@@ -50,23 +52,39 @@ function Products() {
         className="border rounded-md px-4 py-2 w-full max-w-md mb-6"
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            description={product.description}
-            price={product.price}
-            image={product.image}
-          />
-        ))}
-      </div>
-
-      {filteredProducts.length === 0 && (
-        <p className="text-gray-600">
-          No products found.
+      {loading && (
+        <p className="text-gray-600 mb-6">
+          Loading products...
         </p>
+      )}
+
+      {error && (
+        <p className="text-red-500 mb-6">
+          {error}
+        </p>
+      )}
+
+      {!loading && !error && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                price={product.price}
+                image={product.image}
+              />
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <p className="text-gray-600">
+              No products found.
+            </p>
+          )}
+        </>
       )}
     </main>
   )
