@@ -42,9 +42,13 @@ function Cart() {
                     {product.description}
                   </p>
 
-                  <p className="font-bold mt-2">
-                    ₹{product.price}
-                  </p>
+                 <p className="font-bold mt-2">
+                  ₹{product.price}
+                 </p>
+
+                 <p className="mt-2">
+                 Quantity: {product.quantity}
+                 </p>
                 </div>
 
                 <button
