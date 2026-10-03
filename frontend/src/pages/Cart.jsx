@@ -1,7 +1,12 @@
 import { useCart } from '../context/CartContext'
 
 function Cart() {
-  const { cart, removeFromCart } = useCart()
+  const { 
+    cart,
+     removeFromCart,
+    increaseQuantity,
+    decreaseQuantity 
+    } = useCart()
 
   return (
     <main className="min-h-screen p-6">
@@ -46,9 +51,22 @@ function Cart() {
                   ₹{product.price}
                  </p>
 
-                 <p className="mt-2">
-                 Quantity: {product.quantity}
-                 </p>
+                <div className="flex items-center gap-3 mt-3">
+                   <button onClick={() => decreaseQuantity(product.id)}
+                 className="border px-3 py-1 rounded-md" >
+                  −
+                </button>
+
+                     <span>
+                    {product.quantity}
+                     </span>
+             <button
+             onClick={() => increaseQuantity(product.id)}
+             className="border px-3 py-1 rounded-md"
+              >
+              +
+            </button>
+            </div>
                 </div>
 
                 <button
