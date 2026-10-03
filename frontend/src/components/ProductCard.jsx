@@ -1,6 +1,17 @@
 import { Link } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 
 function ProductCard({ id, name, description, price, image }) {
+  const { addToCart } = useCart()
+
+  const product = {
+    id,
+    name,
+    description,
+    price,
+    image,
+  }
+
   return (
     <div className="border rounded-lg p-4">
       <img
@@ -33,7 +44,10 @@ function ProductCard({ id, name, description, price, image }) {
         View Details
       </Link>
 
-      <button className="mt-2 w-full border py-2 rounded-md">
+      <button
+        onClick={() => addToCart(product)}
+        className="mt-2 w-full border py-2 rounded-md"
+      >
         Add to Cart
       </button>
     </div>

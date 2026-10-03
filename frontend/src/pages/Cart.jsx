@@ -1,4 +1,8 @@
+import { useCart } from '../context/CartContext'
+
 function Cart() {
+  const { cart } = useCart()
+
   return (
     <main className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
@@ -6,11 +10,46 @@ function Cart() {
           Your Cart
         </h1>
 
-        <div className="border rounded-lg p-6">
-          <p className="text-gray-600">
-            Your cart is empty.
-          </p>
-        </div>
+        {cart.length === 0 ? (
+          <div className="border rounded-lg p-6">
+            <p className="text-gray-600">
+              Your cart is empty.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {cart.map((product, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 flex items-center gap-4"
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    objectFit: 'contain',
+                  }}
+                />
+
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    {product.name}
+                  </h2>
+
+                  <p className="text-gray-600">
+                    {product.description}
+                  </p>
+
+                  <p className="font-bold mt-2">
+                    ₹{product.price}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   )
