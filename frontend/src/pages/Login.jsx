@@ -3,9 +3,26 @@ import { useState } from 'react'
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    setError('')
+    setSuccess('')
+
+    if (!email || !password) {
+      setError('Please fill all fields')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    setSuccess('Login form is valid')
 
     console.log({
       email,
@@ -24,6 +41,18 @@ function Login() {
           onSubmit={handleSubmit}
           className="border rounded-lg p-6"
         >
+          {error && (
+            <p className="text-red-500 mb-4">
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p className="text-green-600 mb-4">
+              {success}
+            </p>
+          )}
+
           <div className="mb-4">
             <label className="block mb-2">
               Email
