@@ -1,7 +1,7 @@
-
 import { useEffect, useState } from 'react'
 import ProductCard from '../components/ProductCard'
 import { getProducts } from '../services/productApi'
+import { mockProducts } from '../data/mockProducts'
 
 import laptop from '../assets/laptop.jpg'
 import headphones from '../assets/headphones.jpg'
@@ -38,7 +38,8 @@ function Products() {
 
         setProducts(formattedProducts)
       } catch (err) {
-        setError('Unable to load products. Please try again later.')
+        setProducts(mockProducts)
+        setError('')
       } finally {
         setLoading(false)
       }
@@ -213,3 +214,4 @@ function Products() {
 }
 
 export default Products
+
