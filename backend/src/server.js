@@ -3,10 +3,12 @@ const express= require("express");
 const connectDB = require("./config/db");
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 const app= express();
 const port =process.env.PORT||5000;
 
 app.use(express.json());
+app.use("/api/cart", cartRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.get("/api/health",(req,res)=>{
@@ -16,10 +18,11 @@ app.get("/api/health",(req,res)=>{
 async function startServer() {
   await connectDB();
 
-app.listen(port,()=>{
+  app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-});
+  });
 }
+
 app.use((error, req, res, next) => {
   console.error(error);
 
@@ -28,4 +31,5 @@ app.use((error, req, res, next) => {
     message: error.message,
   });
 });
+
 startServer();
