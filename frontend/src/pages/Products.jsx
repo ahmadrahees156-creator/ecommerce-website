@@ -1,5 +1,7 @@
-import { useState } from 'react'
+
+import { useEffect, useState } from 'react'
 import ProductCard from '../components/ProductCard'
+import { getProducts } from '../services/productApi'
 
 import laptop from '../assets/laptop.jpg'
 import headphones from '../assets/headphones.jpg'
@@ -9,35 +11,41 @@ function Products() {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [sortBy, setSortBy] = useState('default')
-  const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const products = [
-    {
-      id: '1',
-      name: 'Laptop',
-      description: 'Powerful laptop for everyday use',
-      price: '59999',
-      image: laptop,
-      category: 'laptops-computers',
-    },
-    {
-      id: '2',
-      name: 'Headphones',
-      description: 'Wireless headphones with clear sound',
-      price: '1999',
-      image: headphones,
-      category: 'audio-headphones',
-    },
-    {
-      id: '3',
-      name: 'Smart Watch',
-      description: 'Smart watch with fitness tracking',
-      price: '2999',
-      image: smartwatch,
-      category: 'smartwatches-wearables',
-    },
-  ]
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        setError('')
+
+        const data = await getProducts()
+
+        const formattedProducts = data.map((product) => ({
+          ...product,
+          id: product._id,
+          price: String(product.price),
+          image:
+            product.imageUrl ||
+            (product.category === 'audio-headphones'
+              ? headphones
+              : product.category === 'smartwatches-wearables'
+                ? smartwatch
+                : laptop),
+        }))
+
+        setProducts(formattedProducts)
+      } catch (err) {
+        setError('Unable to load products. Please try again later.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
 
   const categories = [
     { label: 'All Products', value: 'all' },
@@ -186,7 +194,7 @@ function Products() {
                 </p>
 
                 <p className="mt-2 text-slate-500 dark:text-slate-400">
-                  Try another search or select a different category.
+                  Products will appear here when they are available.
                 </p>
 
                 <button
