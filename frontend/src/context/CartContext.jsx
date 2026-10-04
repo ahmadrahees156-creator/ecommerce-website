@@ -1,9 +1,21 @@
-import { createContext, useContext, useState } from 'react'
+
+import { createContext, useContext, useEffect, useState } from 'react'
 
 const CartContext = createContext()
 
 function CartProvider({ children }) {
-  const [cart, setCart] = useState([])
+  const [cart, setCart] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem('shopkart-cart')
+      return savedCart ? JSON.parse(savedCart) : []
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('shopkart-cart', JSON.stringify(cart))
+  }, [cart])
 
   const addToCart = (product) => {
     setCart((currentCart) => {
@@ -71,3 +83,4 @@ export function useCart() {
 }
 
 export default CartProvider
+
