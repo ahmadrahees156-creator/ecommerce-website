@@ -1,5 +1,6 @@
 const Cart = require("../models/cart");
 const Order = require("../models/order");
+const mongoose = require("mongoose");
 
 const createOrder = async (req, res, next) => {
   try {
@@ -38,5 +39,67 @@ const createOrder = async (req, res, next) => {
     next(error);
   }
 };
+const getMyOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate("items.product", "name price imageUrl");
 
-module.exports = { createOrder };
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getOrderById = async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid order ID" });
+    }
+
+    const order = await Order.findOne({ _id: req.params.id, user: req.user.id })
+      .populate("items.product", "name price imageUrl");
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    return res.status(200).json({ success: true, data: order });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const cancelOrder = async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid order ID" });
+    }
+
+    const order = await Order.findOne({ _id: req.params.id, user: req.user.id });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (order.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Only pending orders can be cancelled",
+      });
+    }
+
+    order.status = "cancelled";
+    await order.save();
+
+    return res.status(200).json({ success: true, data: order });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createOrder, getMyOrders, getOrderById, cancelOrder };
