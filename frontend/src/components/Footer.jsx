@@ -42,36 +42,66 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-10 px-6 py-10 sm:grid-cols-3 lg:grid-cols-4 lg:gap-12 lg:px-10">
         <div>
           <h2 className={headingClass}>Get to Know Us</h2>
+
           <div className="flex flex-col items-start gap-2">
-            <Link to="/" className={linkClass}>About ShopKart</Link>
-            <Link to="/products" className={linkClass}>Our Products</Link>
-            <Link to="/register" className={linkClass}>Join ShopKart</Link>
+            <Link to="/about" className={linkClass}>
+              About ShopKart
+            </Link>
+
+            <Link to="/products" className={linkClass}>
+              Our Products
+            </Link>
+
+            <Link to="/register" className={linkClass}>
+              Join ShopKart
+            </Link>
           </div>
         </div>
 
         <div>
           <h2 className={headingClass}>Shop with Us</h2>
+
           <div className="flex flex-col items-start gap-2">
-            <Link to="/products" className={linkClass}>Browse Products</Link>
-            <Link to="/cart" className={linkClass}>Your Cart</Link>
-            <Link to="/checkout" className={linkClass}>Checkout</Link>
+            <Link to="/products" className={linkClass}>
+              Browse Products
+            </Link>
+
+            <Link to="/cart" className={linkClass}>
+              Your Cart
+            </Link>
+
+            <Link to="/checkout" className={linkClass}>
+              Checkout
+            </Link>
           </div>
         </div>
 
         <div>
           <h2 className={headingClass}>Your Account</h2>
+
           <div className="flex flex-col items-start gap-2">
-            <Link to="/login" className={linkClass}>Sign In</Link>
-            <Link to="/register" className={linkClass}>Create Account</Link>
-            <Link to="/cart" className={linkClass}>Manage Cart</Link>
+            <Link to="/login" className={linkClass}>
+              Sign In
+            </Link>
+
+            <Link to="/register" className={linkClass}>
+              Create Account
+            </Link>
+
+            <Link to="/cart" className={linkClass}>
+              Manage Cart
+            </Link>
           </div>
         </div>
 
         <div>
           <h2 className={headingClass}>Need Help?</h2>
+
           <p className="max-w-xs text-sm leading-6">
-            Browse our collection and review your order details before checkout.
+            Browse our collection and review your order details
+            before checkout.
           </p>
+
           <Link
             to="/products"
             className="mt-3 inline-block text-sm font-semibold text-blue-500 hover:underline"
@@ -106,3 +136,4 @@ function Footer() {
 }
 
 export default Footer
+
