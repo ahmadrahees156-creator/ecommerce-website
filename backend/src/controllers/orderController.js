@@ -131,5 +131,20 @@ const updateOrderStatus = async (req, res, next) => {
     next(error);
   }
 };
+const getAllOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .populate("user", "name email")
+      .populate("items.product", "name price imageUrl");
 
-module.exports = { createOrder, getMyOrders, getOrderById, cancelOrder, updateOrderStatus };
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+module.exports = { createOrder, getMyOrders, getOrderById, cancelOrder, updateOrderStatus, getAllOrders };
