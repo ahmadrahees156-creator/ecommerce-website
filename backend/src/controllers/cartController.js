@@ -96,6 +96,24 @@ async function removeFromCart(req, res, next) {
   }
 }
 
+async function clearCart(req, res, next) {
+  try {
+    const cart = await Cart.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: { items: [] } },
+      { new: true }
+    ).populate("items.product");
+
+    if (!cart) {
+      return res.status(404).json({ success: false, message: "Cart not found" });
+    }
+
+    res.status(200).json({ success: true, data: cart });
+  } catch (error) {
+    next(error);
+  }
+}
+
 const updateCartItem = async (req, res, next) => {
   try {
     const { productId } = req.params;
@@ -129,4 +147,4 @@ const updateCartItem = async (req, res, next) => {
   }
 };
 
-module.exports = { getCart, addToCart, removeFromCart, updateCartItem };
+module.exports = { getCart, addToCart, removeFromCart, clearCart, updateCartItem };
