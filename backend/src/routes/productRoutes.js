@@ -1,8 +1,11 @@
 const express=require("express");
  const router=express.Router();
 const{getProducts,getProductById,createProduct,updateProduct,deleteProduct,}= require("../controllers/productController");
+const { getProductReviews, addProductReview } = require("../controllers/reviewController");
 const { protect } = require("../middleware/authMiddleware");
 router.get("/", getProducts);
+router.get("/:productId/reviews", getProductReviews);
+router.post("/:productId/reviews", protect, addProductReview);
  router.get("/:id",getProductById);
 router.post("/",protect, createProduct);
 router.patch("/:id", protect, updateProduct);
