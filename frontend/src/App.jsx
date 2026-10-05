@@ -9,12 +9,14 @@ import Login from './pages/Login'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import About from './pages/About'
+import Wishlist from './pages/Wishlist'
+import Orders from './pages/Orders'
+import OrderDetails from './pages/OrderDetails'
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
@@ -23,9 +25,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/orders/:id" element={<OrderDetails />} />
         <Route path="/about" element={<About />} />
       </Routes>
-
       <Footer />
     </BrowserRouter>
   )
