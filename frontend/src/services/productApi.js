@@ -1,11 +1,4 @@
 import axios from 'axios'
-
-export const getProducts = async () => {
-  const response = await axios.get('/api/products')
-  return response.data.data
-}
-
-export const getProductById = async (id) => {
-  const response = await axios.get(`/api/products/${id}`)
-  return response.data.data
-}
+export const getProducts = async (params = {}) => (await axios.get('/api/products',{params})).data
+export const getCategories = async () => (await axios.get('/api/products/categories')).data.data
+export const getProductById = async id => (await axios.get('/api/products/'+id)).data.data
