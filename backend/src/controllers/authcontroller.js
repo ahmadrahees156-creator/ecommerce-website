@@ -114,4 +114,11 @@ async function login(req, res, next) {
   }
 }
 
-module.exports = { register, login };
+function getMe(req, res) {
+  res.status(200).json({
+    success: true,
+    user: safeUser(req.user),
+  });
+}
+
+module.exports = { register, login, getMe };
