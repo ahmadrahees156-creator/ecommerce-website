@@ -41,7 +41,20 @@ const createOrder = async (req, res, next) => {
 };
 const getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ user: req.user.id })
+    const allowedStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
+    const { status } = req.query;
+
+    if (status && !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Status must be one of: ${allowedStatuses.join(", ")}`,
+      });
+    }
+
+    const filter = { user: req.user.id };
+    if (status) filter.status = status;
+
+    const orders = await Order.find(filter)
       .sort({ createdAt: -1 })
       .populate("items.product", "name price imageUrl");
 
