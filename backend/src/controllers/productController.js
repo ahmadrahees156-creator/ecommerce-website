@@ -3,15 +3,45 @@ const Product=require("../models/product");
 
 async function getProducts(req,res,next){
   try{
-    const{search}=req.query;
-    const filter=search
-      ?{ name:{ $regex:search, $options:"i"}}:{};
+    const { search, category } = req.query;
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? 10);
 
-    const products = await Product.find(filter).sort({ createdAt: -1 });
+    if (!Number.isInteger(page) || page < 1) {
+      return res.status(400).json({ success: false, message: "Page must be a positive integer" });
+    }
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      return res.status(400).json({ success: false, message: "Limit must be between 1 and 100" });
+    }
+
+    const filter = {};
+    if (search?.trim()) {
+      const safeSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.name = { $regex: safeSearch, $options: "i" };
+    }
+
+    if (category?.trim()) {
+      const safeCategory = category.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.category = { $regex: `^${safeCategory}$`, $options: "i" };
+    }
+
+    const [products, total] = await Promise.all([
+      Product.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Product.countDocuments(filter),
+    ]);
+
     res.status(200).json({
-      success:true,
-      count:products.length,
-      data:products,
+      success: true,
+      count: products.length,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      data: products,
     });
   } catch (error) {
     next(error);
