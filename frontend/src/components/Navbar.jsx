@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 
 function Navbar() {
   const { darkMode, toggleTheme } = useTheme()
   const { cart } = useCart()
+  const { user, isAuthenticated, logout } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const closeMenu = () => setMenuOpen(false)
@@ -61,21 +63,36 @@ function Navbar() {
 
           <div className="flex shrink-0 items-center gap-2">
 
-            <Link
-              to="/login"
-              onClick={closeMenu}
-              className="hidden px-3 py-2 text-sm font-medium text-slate-700 transition hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400 sm:block"
-            >
-              Login
-            </Link>
-
-            <Link
-              to="/register"
-              onClick={closeMenu}
-              className="hidden rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 sm:block"
-            >
-              Register
-            </Link>
+            {isAuthenticated ? (
+              <div className="hidden items-center gap-2 sm:flex">
+                <span className="max-w-28 truncate text-sm text-slate-600 dark:text-slate-300">
+                  Hi, {user?.name || 'User'}
+                </span>
+                <button
+                  onClick={() => { logout(); closeMenu() }}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={closeMenu}
+                  className="hidden px-3 py-2 text-sm font-medium text-slate-700 transition hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400 sm:block"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMenu}
+                  className="hidden rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 sm:block"
+                >
+                  Register
+                </Link>
+              </>
+            )}
 
             <button
               onClick={toggleTheme}
@@ -146,21 +163,31 @@ function Navbar() {
                 )}
               </Link>
 
-              <Link
-                to="/login"
-                onClick={closeMenu}
-                className="rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-              >
-                Login
-              </Link>
-
-              <Link
-                to="/register"
-                onClick={closeMenu}
-                className="rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-              >
-                Register
-              </Link>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => { logout(); closeMenu() }}
+                  className="rounded-lg px-4 py-3 text-left text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                >
+                  Logout ({user?.name || 'User'})
+                </button>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={closeMenu}
+                    className="rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
 
             </div>
           </div>
