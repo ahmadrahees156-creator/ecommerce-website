@@ -65,6 +65,21 @@ async function getProducts(req,res,next){
   }
 }
 
+async function getCategories(req, res, next) {
+  try {
+    const categories = await Product.distinct("category");
+    categories.sort((a, b) => a.localeCompare(b));
+
+    res.status(200).json({
+      success: true,
+      count: categories.length,
+      data: categories,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getProductById(req, res, next) {
   try {
     const{id}=req.params;
@@ -178,4 +193,4 @@ async function deleteProduct(req, res, next) {
     next(error);
   }
 }
-module.exports ={ getProducts, getProductById, createProduct, updateProduct ,deleteProduct,};
+module.exports ={ getProducts, getCategories, getProductById, createProduct, updateProduct ,deleteProduct,};
