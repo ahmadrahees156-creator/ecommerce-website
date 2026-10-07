@@ -12,28 +12,30 @@ function Footer() {
   }
 
   const headingClass = `mb-3 text-base font-bold ${
-    darkMode ? 'text-white' : 'text-slate-900'
+    darkMode ? 'text-[#F5F5F5]' : 'text-[#171717]'
   }`
 
-  const linkClass = `text-sm leading-6 transition hover:underline hover:text-blue-500 ${
-    darkMode ? 'text-slate-300' : 'text-slate-600'
+  const linkClass = `text-sm leading-6 transition hover:underline ${
+    darkMode
+      ? 'text-[#A3A3A3] hover:text-[#22C55E]'
+      : 'text-[#525252] hover:text-[#15803D]'
   }`
 
   return (
     <footer
       className={`transition-colors duration-300 ${
         darkMode
-          ? 'bg-[#131921] text-slate-300'
-          : 'bg-slate-100 text-slate-700'
+          ? 'bg-[#050505] text-[#A3A3A3]'
+          : 'bg-[#F7F8F6] text-[#525252]'
       }`}
     >
       <button
         type="button"
         onClick={scrollToTop}
-        className={`w-full py-4 text-center text-sm font-medium transition ${
+        className={`w-full border-b py-4 text-center text-sm font-medium transition ${
           darkMode
-            ? 'bg-[#232f3e] text-white hover:bg-[#314158]'
-            : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+            ? 'border-[#262626] bg-[#111111] text-[#F5F5F5] hover:bg-[#1A1A1A]'
+            : 'border-[#E5E7EB] bg-[#EDEEEB] text-[#171717] hover:bg-[#E5E6E3]'
         }`}
       >
         Back to top ↑
@@ -104,7 +106,9 @@ function Footer() {
 
           <Link
             to="/products"
-            className="mt-3 inline-block text-sm font-semibold text-blue-500 hover:underline"
+            className={`mt-3 inline-block text-sm font-semibold hover:underline ${
+              darkMode ? 'text-[#22C55E]' : 'text-[#15803D]'
+            }`}
           >
             Continue Shopping →
           </Link>
@@ -114,17 +118,24 @@ function Footer() {
       <div
         className={`border-t px-6 py-6 text-center ${
           darkMode
-            ? 'border-slate-700 bg-[#131921]'
-            : 'border-slate-300 bg-slate-100'
+            ? 'border-[#262626] bg-[#050505]'
+            : 'border-[#E5E7EB] bg-[#F7F8F6]'
         }`}
       >
         <Link
           to="/"
           className={`text-2xl font-extrabold tracking-tight ${
-            darkMode ? 'text-white' : 'text-slate-900'
+            darkMode ? 'text-[#F5F5F5]' : 'text-[#171717]'
           }`}
         >
-          Shop<span className="text-blue-500">Kart</span>
+          Shop
+          <span
+            className={
+              darkMode ? 'text-[#22C55E]' : 'text-[#15803D]'
+            }
+          >
+            Kart
+          </span>
         </Link>
 
         <p className="mt-3 text-xs">
@@ -136,4 +147,3 @@ function Footer() {
 }
 
 export default Footer
-

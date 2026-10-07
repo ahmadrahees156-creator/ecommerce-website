@@ -4,6 +4,7 @@ import { getProducts, getCategories } from '../services/productApi'
 import laptop from '../assets/laptop.jpg'
 import headphones from '../assets/headphones.jpg'
 import smartwatch from '../assets/smartwatch.jpg'
+import { useTheme } from '../context/ThemeContext'
 
 const sortMap = {
   default: 'newest',
@@ -13,6 +14,8 @@ const sortMap = {
 }
 
 function Products() {
+  const { darkMode } = useTheme()
+
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [sortBy, setSortBy] = useState('default')
@@ -51,18 +54,20 @@ function Products() {
           limit: 9,
         })
 
-        const formattedProducts = (response.data || []).map((product) => ({
-          ...product,
-          id: product._id,
-          price: String(product.price),
-          image:
-            product.imageUrl ||
-            (product.category === 'audio-headphones'
-              ? headphones
-              : product.category === 'smartwatches-wearables'
-                ? smartwatch
-                : laptop),
-        }))
+        const formattedProducts = (response.data || []).map(
+          (product) => ({
+            ...product,
+            id: product._id,
+            price: String(product.price),
+            image:
+              product.imageUrl ||
+              (product.category === 'audio-headphones'
+                ? headphones
+                : product.category === 'smartwatches-wearables'
+                  ? smartwatch
+                  : laptop),
+          })
+        )
 
         setProducts(formattedProducts)
         setTotal(response.total || 0)
@@ -71,6 +76,7 @@ function Products() {
         setProducts([])
         setTotal(0)
         setTotalPages(1)
+
         setError(
           err.response?.data?.message ||
             'Unable to load products. Please make sure the backend is running.'
@@ -100,12 +106,31 @@ function Products() {
     setPage(1)
   }
 
+  const card = darkMode
+    ? 'border-[#262626] bg-[#111111]'
+    : 'border-[#E5E7EB] bg-white'
+
+  const muted = darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+
+  const input = darkMode
+    ? 'border-[#262626] bg-[#111111] text-[#F5F5F5] placeholder:text-[#737373] focus:border-[#22C55E]'
+    : 'border-[#E5E7EB] bg-white text-[#171717] placeholder:text-[#737373] focus:border-[#15803D]'
+
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white sm:px-6 lg:px-8">
+    <main
+      className={`min-h-screen px-4 py-8 transition-colors sm:px-6 lg:px-8 ${
+        darkMode
+          ? 'bg-[#050505] text-[#F5F5F5]'
+          : 'bg-[#F7F8F6] text-[#171717]'
+      }`}
+    >
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Products</h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Products
+          </h1>
+
+          <p className={`mt-2 ${muted}`}>
             Explore our latest products and find what you need.
           </p>
         </div>
@@ -120,17 +145,27 @@ function Products() {
                 setSearch(e.target.value)
                 setPage(1)
               }}
-              className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
+              className={`w-full rounded-xl border px-5 py-3 pr-12 outline-none transition focus:ring-4 focus:ring-[#22C55E]/10 ${input}`}
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg">🔍</span>
+
+            <span
+              className={`absolute right-4 top-1/2 -translate-y-1/2 text-lg ${
+                darkMode ? 'text-[#22C55E]' : 'text-[#15803D]'
+              }`}
+            >
+              🔍
+            </span>
           </div>
 
           <select
             value={category}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            onChange={(e) =>
+              handleCategoryChange(e.target.value)
+            }
+            className={`w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-[#22C55E]/20 ${input}`}
           >
             <option value="all">All Products</option>
+
             {categories.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -141,7 +176,7 @@ function Products() {
           <select
             value={sortBy}
             onChange={(e) => handleSortChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            className={`w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-[#22C55E]/20 ${input}`}
           >
             <option value="default">Sort: Newest</option>
             <option value="price-low">Price: Low to High</option>
@@ -151,13 +186,13 @@ function Products() {
         </div>
 
         {loading && (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+          <div className={`rounded-xl border p-6 text-center ${card}`}>
             Loading products...
           </div>
         )}
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 text-center text-red-500">
             {error}
           </div>
         )}
@@ -165,14 +200,21 @@ function Products() {
         {!loading && !error && (
           <>
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Showing {products.length} of {total} products · Page {page} of {totalPages}
+              <p className={`text-sm ${muted}`}>
+                Showing {products.length} of {total} products · Page{' '}
+                {page} of {totalPages}
               </p>
 
-              {(search || category !== 'all' || sortBy !== 'default') && (
+              {(search ||
+                category !== 'all' ||
+                sortBy !== 'default') && (
                 <button
                   onClick={clearFilters}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                  className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+                    darkMode
+                      ? 'border-[#262626] hover:bg-[#111111]'
+                      : 'border-[#E5E7EB] hover:bg-white'
+                  }`}
                 >
                   Clear Filters
                 </button>
@@ -182,18 +224,31 @@ function Products() {
             {products.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((product) => (
-                  <ProductCard key={product.id} {...product} />
+                  <ProductCard
+                    key={product.id}
+                    {...product}
+                  />
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center dark:border-slate-800 dark:bg-slate-900">
-                <p className="text-lg font-semibold">No products found</p>
-                <p className="mt-2 text-slate-500 dark:text-slate-400">
+              <div
+                className={`rounded-2xl border p-10 text-center ${card}`}
+              >
+                <p className="text-lg font-semibold">
+                  No products found
+                </p>
+
+                <p className={`mt-2 ${muted}`}>
                   Try another search or category.
                 </p>
+
                 <button
                   onClick={clearFilters}
-                  className="mt-5 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
+                  className={`mt-5 rounded-xl px-5 py-3 text-sm font-semibold transition ${
+                    darkMode
+                      ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                      : 'bg-[#15803D] text-white hover:bg-[#166534]'
+                  }`}
                 >
                   Clear Filters
                 </button>
@@ -205,17 +260,27 @@ function Products() {
                 <button
                   disabled={page === 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700"
+                  className={`rounded-lg border px-4 py-2 transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                    darkMode
+                      ? 'border-[#262626] hover:bg-[#111111]'
+                      : 'border-[#E5E7EB] hover:bg-white'
+                  }`}
                 >
                   Previous
                 </button>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
+
+                <span className={`text-sm ${muted}`}>
                   Page {page} / {totalPages}
                 </span>
+
                 <button
                   disabled={page === totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700"
+                  className={`rounded-lg border px-4 py-2 transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                    darkMode
+                      ? 'border-[#262626] hover:bg-[#111111]'
+                      : 'border-[#E5E7EB] hover:bg-white'
+                  }`}
                 >
                   Next
                 </button>

@@ -24,15 +24,19 @@ function Login() {
     }
 
     setLoading(true)
+
     try {
       const response = await api.post('/auth/login', {
         email: email.trim(),
         password,
       })
+
       const { token, user } = response.data
 
       if (!token || !user) {
-        throw new Error('The server returned an unexpected login response.')
+        throw new Error(
+          'The server returned an unexpected login response.'
+        )
       }
 
       login(token, user)
@@ -40,49 +44,82 @@ function Login() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-        err.message ||
-        'Login failed. Please check your connection and try again.'
+          err.message ||
+          'Login failed. Please check your connection and try again.'
       )
     } finally {
       setLoading(false)
     }
   }
 
+  const input = darkMode
+    ? 'border-[#262626] bg-[#050505] text-[#F5F5F5] placeholder:text-[#737373] focus:border-[#22C55E] focus:ring-[#22C55E]/20'
+    : 'border-[#E5E7EB] bg-white text-[#171717] placeholder:text-[#737373] focus:border-[#15803D] focus:ring-[#15803D]/20'
+
   return (
     <main
-      className={`min-h-screen px-4 py-12 flex items-center justify-center transition-colors duration-300 ${
-        darkMode ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'
+      className={`flex min-h-screen items-center justify-center px-4 py-12 transition-colors ${
+        darkMode
+          ? 'bg-[#050505] text-[#F5F5F5]'
+          : 'bg-[#F7F8F6] text-[#171717]'
       }`}
     >
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-extrabold tracking-tight text-blue-600">
-            ShopKart<span className={darkMode ? 'text-white' : 'text-slate-900'}>.</span>
+        <div className="mb-8 text-center">
+          <Link
+            to="/"
+            className={`text-3xl font-extrabold tracking-tight ${
+              darkMode ? 'text-[#F5F5F5]' : 'text-[#171717]'
+            }`}
+          >
+            Shop
+            <span
+              className={
+                darkMode ? 'text-[#22C55E]' : 'text-[#15803D]'
+              }
+            >
+              Kart
+            </span>
           </Link>
-          <h1 className="text-2xl font-bold mt-5">Welcome back!</h1>
-          <p className={`mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+
+          <h1 className="mt-5 text-2xl font-bold">
+            Welcome back!
+          </h1>
+
+          <p
+            className={`mt-2 ${
+              darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+            }`}
+          >
             Sign in to continue shopping
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className={`border rounded-2xl p-6 sm:p-8 shadow-xl transition-colors duration-300 ${
+          className={`rounded-2xl border p-6 shadow-xl transition-colors sm:p-8 ${
             darkMode
-              ? 'bg-slate-900 border-slate-800 shadow-black/20'
-              : 'bg-white border-slate-200 shadow-slate-200/50'
+              ? 'border-[#262626] bg-[#111111] shadow-black/30'
+              : 'border-[#E5E7EB] bg-white shadow-black/5'
           }`}
         >
           {error && (
-            <p role="alert" className="bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg p-3 mb-5 text-sm">
+            <p
+              role="alert"
+              className="mb-5 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-500"
+            >
               {error}
             </p>
           )}
 
           <div className="mb-5">
-            <label htmlFor="email" className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-semibold"
+            >
               Email address
             </label>
+
             <input
               id="email"
               type="email"
@@ -91,18 +128,18 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               required
-              className={`w-full border rounded-lg px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
-                  : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
-              }`}
+              className={`w-full rounded-xl border px-4 py-3 outline-none transition focus:ring-4 ${input}`}
             />
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-semibold"
+            >
               Password
             </label>
+
             <input
               id="password"
               type="password"
@@ -111,36 +148,40 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               required
-              className={`w-full border rounded-lg px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
-                  : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
-              }`}
+              className={`w-full rounded-xl border px-4 py-3 outline-none transition focus:ring-4 ${input}`}
             />
-            <p className={`text-xs mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-              Enter your account password.
-            </p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.99] text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md shadow-blue-600/20"
+            className={`w-full rounded-xl px-4 py-3 font-semibold transition disabled:opacity-50 ${
+              darkMode
+                ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                : 'bg-[#15803D] text-white hover:bg-[#166534]'
+            }`}
           >
-            {loading ? 'Signing in...' : 'Login'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
 
-          <p className={`text-center text-sm mt-6 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p
+            className={`mt-6 text-center text-sm ${
+              darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+            }`}
+          >
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-500 font-semibold hover:text-blue-400">
-              Create account
+            <Link
+              to="/register"
+              className={`font-semibold ${
+                darkMode
+                  ? 'text-[#22C55E] hover:text-[#4ADE80]'
+                  : 'text-[#15803D] hover:text-[#166534]'
+              }`}
+            >
+              Create one
             </Link>
           </p>
         </form>
-
-        <p className={`text-center text-xs mt-6 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-          © 2026 ShopKart. All rights reserved.
-        </p>
       </div>
     </main>
   )
