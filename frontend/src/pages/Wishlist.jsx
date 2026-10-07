@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { cancelOrder, getMyOrders } from '../services/orderApi'
+import {
+  getWishlist,
+  removeFromWishlist,
+} from '../services/wishlistApi'
 import { useTheme } from '../context/ThemeContext'
 
-function Orders() {
+function Wishlist() {
   const { darkMode } = useTheme()
 
-  const [orders, setOrders] = useState([])
-  const [status, setStatus] = useState('')
+  const [wishlist, setWishlist] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const loadOrders = async () => {
+  const loadWishlist = async () => {
     try {
       setLoading(true)
       setError('')
-      setOrders(await getMyOrders(status))
+      setWishlist(await getWishlist())
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          'Unable to load orders.'
+          'Unable to load wishlist.'
       )
     } finally {
       setLoading(false)
@@ -27,19 +29,17 @@ function Orders() {
   }
 
   useEffect(() => {
-    loadOrders()
-  }, [status])
+    loadWishlist()
+  }, [])
 
-  const handleCancel = async (id) => {
-    if (!window.confirm('Cancel this order?')) return
-
+  const handleRemove = async (productId) => {
     try {
-      await cancelOrder(id)
-      await loadOrders()
+      await removeFromWishlist(productId)
+      await loadWishlist()
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          'Unable to cancel order.'
+          'Unable to remove product from wishlist.'
       )
     }
   }
@@ -52,6 +52,24 @@ function Orders() {
     ? 'text-[#A3A3A3]'
     : 'text-[#525252]'
 
+  const green = darkMode
+    ? 'text-[#22C55E]'
+    : 'text-[#15803D]'
+
+  if (loading) {
+    return (
+      <main
+        className={`flex min-h-screen items-center justify-center ${
+          darkMode
+            ? 'bg-[#050505] text-[#F5F5F5]'
+            : 'bg-[#F7F8F6] text-[#171717]'
+        }`}
+      >
+        <p>Loading wishlist...</p>
+      </main>
+    )
+  }
+
   return (
     <main
       className={`min-h-screen px-4 py-8 transition-colors sm:px-6 lg:px-8 ${
@@ -60,41 +78,16 @@ function Orders() {
           : 'bg-[#F7F8F6] text-[#171717]'
       }`}
     >
-      <div className="mx-auto max-w-5xl">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold sm:text-4xl">
-              My Orders
-            </h1>
+      <div className="mx-auto max-w-6xl">
+        <div>
+          <h1 className="text-3xl font-bold sm:text-4xl">
+            My Wishlist
+          </h1>
 
-            <p className={`mt-2 ${muted}`}>
-              Track your ShopKart orders.
-            </p>
-          </div>
-
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className={`rounded-xl border px-4 py-3 outline-none ${
-              darkMode
-                ? 'border-[#262626] bg-[#111111]'
-                : 'border-[#E5E7EB] bg-white'
-            }`}
-          >
-            <option value="">All statuses</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-
-        {loading && (
-          <p className="mt-8 text-center">
-            Loading orders...
+          <p className={`mt-2 ${muted}`}>
+            Products you saved for later.
           </p>
-        )}
+        </div>
 
         {error && (
           <p className="mt-8 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-500">
@@ -102,88 +95,109 @@ function Orders() {
           </p>
         )}
 
-        {!loading && !error && orders.length === 0 && (
-          <div
-            className={`mt-8 rounded-2xl border p-10 text-center ${card}`}
-          >
-            No orders found.
-          </div>
-        )}
-
-        <div className="mt-8 space-y-4">
-          {orders.map((order) => (
+        {!error &&
+          (!wishlist?.products ||
+            wishlist.products.length === 0) && (
             <div
-              key={order._id}
-              className={`rounded-2xl border p-5 shadow-sm ${card}`}
+              className={`mt-8 rounded-2xl border p-10 text-center ${card}`}
             >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className={`text-sm ${muted}`}>
-                    Order #{order._id.slice(-8)}
-                  </p>
+              <p className="text-lg font-semibold">
+                Your wishlist is empty.
+              </p>
 
-                  <p className="mt-1 font-semibold">
-                    {new Date(
-                      order.createdAt
-                    ).toLocaleString('en-IN')}
-                  </p>
-                </div>
+              <p className={`mt-2 ${muted}`}>
+                Save products you like and find them here later.
+              </p>
 
-                <span
-                  className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${
-                    darkMode
-                      ? 'bg-[#052E16] text-[#4ADE80]'
-                      : 'bg-[#DCFCE7] text-[#15803D]'
-                  }`}
-                >
-                  {order.status}
-                </span>
-              </div>
-
-              <div
-                className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 ${
+              <Link
+                to="/products"
+                className={`mt-6 inline-block rounded-xl px-5 py-3 font-semibold text-white ${
                   darkMode
-                    ? 'border-[#262626]'
-                    : 'border-[#E5E7EB]'
+                    ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                    : 'bg-[#15803D] hover:bg-[#166534]'
                 }`}
               >
-                <p className="text-lg font-bold">
-                  ₹
-                  {Number(
-                    order.totalAmount
-                  ).toLocaleString('en-IN')}
-                </p>
+                Browse Products
+              </Link>
+            </div>
+          )}
 
-                <div className="flex gap-2">
-                  <Link
-                    to={`/orders/${order._id}`}
-                    className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+        {!error &&
+          wishlist?.products &&
+          wishlist.products.length > 0 && (
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {wishlist.products.map((product) => (
+                <div
+                  key={product._id}
+                  className={`overflow-hidden rounded-2xl border shadow-sm ${card}`}
+                >
+                  <div
+                    className={`flex h-56 items-center justify-center p-6 ${
                       darkMode
-                        ? 'border-[#262626] hover:bg-[#050505]'
-                        : 'border-[#E5E7EB] hover:bg-[#F7F8F6]'
+                        ? 'bg-[#0B0B0B]'
+                        : 'bg-[#F7F8F6]'
                     }`}
                   >
-                    View Details
-                  </Link>
+                    {product.imageUrl ? (
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <span className={muted}>
+                        No image available
+                      </span>
+                    )}
+                  </div>
 
-                  {order.status === 'pending' && (
-                    <button
-                      onClick={() =>
-                        handleCancel(order._id)
-                      }
-                      className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+                  <div className="p-5">
+                    <h2 className="line-clamp-1 text-lg font-bold">
+                      {product.name}
+                    </h2>
+
+                    <p
+                      className={`mt-2 line-clamp-2 text-sm ${muted}`}
                     >
-                      Cancel
-                    </button>
-                  )}
+                      {product.description}
+                    </p>
+
+                    <p className={`mt-4 text-xl font-bold ${green}`}>
+                      ₹
+                      {Number(product.price).toLocaleString(
+                        'en-IN'
+                      )}
+                    </p>
+
+                    <div className="mt-5 flex gap-2">
+                      <Link
+                        to={`/products/${product._id}`}
+                        className={`flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold text-white ${
+                          darkMode
+                            ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                            : 'bg-[#15803D] hover:bg-[#166534]'
+                        }`}
+                      >
+                        View Details
+                      </Link>
+
+                      <button
+                        onClick={() =>
+                          handleRemove(product._id)
+                        }
+                        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
       </div>
     </main>
   )
 }
 
-export default Orders
+export default Wishlist
