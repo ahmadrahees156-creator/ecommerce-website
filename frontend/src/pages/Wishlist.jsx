@@ -1,77 +1,189 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getWishlist, removeFromWishlist } from '../services/wishlistApi'
+import { cancelOrder, getMyOrders } from '../services/orderApi'
+import { useTheme } from '../context/ThemeContext'
 
-function Wishlist() {
-  const [products, setProducts] = useState([])
+function Orders() {
+  const { darkMode } = useTheme()
+
+  const [orders, setOrders] = useState([])
+  const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const loadWishlist = async () => {
+  const loadOrders = async () => {
     try {
       setLoading(true)
-      const data = await getWishlist()
-      setProducts(data?.products || [])
       setError('')
+      setOrders(await getMyOrders(status))
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to load wishlist.')
+      setError(
+        err.response?.data?.message ||
+          'Unable to load orders.'
+      )
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    loadWishlist()
-  }, [])
+    loadOrders()
+  }, [status])
 
-  const remove = async (id) => {
+  const handleCancel = async (id) => {
+    if (!window.confirm('Cancel this order?')) return
+
     try {
-      const data = await removeFromWishlist(id)
-      setProducts(data?.products || [])
+      await cancelOrder(id)
+      await loadOrders()
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to remove item.')
+      setError(
+        err.response?.data?.message ||
+          'Unable to cancel order.'
+      )
     }
   }
 
+  const card = darkMode
+    ? 'border-[#262626] bg-[#111111]'
+    : 'border-[#E5E7EB] bg-white'
+
+  const muted = darkMode
+    ? 'text-[#A3A3A3]'
+    : 'text-[#525252]'
+
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 dark:bg-slate-950 dark:text-white sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <h1 className="text-3xl font-bold sm:text-4xl">My Wishlist</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">Products you saved for later.</p>
+    <main
+      className={`min-h-screen px-4 py-8 transition-colors sm:px-6 lg:px-8 ${
+        darkMode
+          ? 'bg-[#050505] text-[#F5F5F5]'
+          : 'bg-[#F7F8F6] text-[#171717]'
+      }`}
+    >
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold sm:text-4xl">
+              My Orders
+            </h1>
 
-        {loading && <p className="mt-8 text-center">Loading wishlist...</p>}
-        {error && <p className="mt-8 rounded-xl bg-red-50 p-4 text-red-600 dark:bg-red-950/30 dark:text-red-400">{error}</p>}
+            <p className={`mt-2 ${muted}`}>
+              Track your ShopKart orders.
+            </p>
+          </div>
 
-        {!loading && !error && products.length === 0 && (
-          <div className="mt-8 rounded-2xl border bg-white p-10 text-center dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-xl font-semibold">Your wishlist is empty.</p>
-            <Link to="/products" className="mt-5 inline-block rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white dark:bg-white dark:text-slate-900">
-              Browse Products
-            </Link>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className={`rounded-xl border px-4 py-3 outline-none ${
+              darkMode
+                ? 'border-[#262626] bg-[#111111]'
+                : 'border-[#E5E7EB] bg-white'
+            }`}
+          >
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        {loading && (
+          <p className="mt-8 text-center">
+            Loading orders...
+          </p>
+        )}
+
+        {error && (
+          <p className="mt-8 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-500">
+            {error}
+          </p>
+        )}
+
+        {!loading && !error && orders.length === 0 && (
+          <div
+            className={`mt-8 rounded-2xl border p-10 text-center ${card}`}
+          >
+            No orders found.
           </div>
         )}
 
-        {!loading && products.length > 0 && (
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <div key={product._id} className="rounded-2xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <Link to={`/products/${product._id}`}>
-                  <div className="flex h-52 items-center justify-center rounded-xl bg-slate-100 p-5 dark:bg-slate-800">
-                    <img src={product.imageUrl} alt={product.name} className="h-full w-full object-contain" />
-                  </div>
-                  <h2 className="mt-4 text-xl font-bold">{product.name}</h2>
-                </Link>
-                <p className="mt-2 text-lg font-bold">₹{Number(product.price).toLocaleString('en-IN')}</p>
-                <button onClick={() => remove(product._id)} className="mt-4 w-full rounded-xl border border-red-200 px-4 py-3 font-semibold text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950/30">
-                  Remove from Wishlist
-                </button>
+        <div className="mt-8 space-y-4">
+          {orders.map((order) => (
+            <div
+              key={order._id}
+              className={`rounded-2xl border p-5 shadow-sm ${card}`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className={`text-sm ${muted}`}>
+                    Order #{order._id.slice(-8)}
+                  </p>
+
+                  <p className="mt-1 font-semibold">
+                    {new Date(
+                      order.createdAt
+                    ).toLocaleString('en-IN')}
+                  </p>
+                </div>
+
+                <span
+                  className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${
+                    darkMode
+                      ? 'bg-[#052E16] text-[#4ADE80]'
+                      : 'bg-[#DCFCE7] text-[#15803D]'
+                  }`}
+                >
+                  {order.status}
+                </span>
               </div>
-            ))}
-          </div>
-        )}
+
+              <div
+                className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 ${
+                  darkMode
+                    ? 'border-[#262626]'
+                    : 'border-[#E5E7EB]'
+                }`}
+              >
+                <p className="text-lg font-bold">
+                  ₹
+                  {Number(
+                    order.totalAmount
+                  ).toLocaleString('en-IN')}
+                </p>
+
+                <div className="flex gap-2">
+                  <Link
+                    to={`/orders/${order._id}`}
+                    className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+                      darkMode
+                        ? 'border-[#262626] hover:bg-[#050505]'
+                        : 'border-[#E5E7EB] hover:bg-[#F7F8F6]'
+                    }`}
+                  >
+                    View Details
+                  </Link>
+
+                  {order.status === 'pending' && (
+                    <button
+                      onClick={() =>
+                        handleCancel(order._id)
+                      }
+                      className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   )
 }
 
-export default Wishlist
+export default Orders

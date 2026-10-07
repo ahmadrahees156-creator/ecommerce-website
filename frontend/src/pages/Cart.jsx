@@ -1,8 +1,9 @@
-
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useTheme } from '../context/ThemeContext'
 
 function Cart() {
+  const { darkMode } = useTheme()
   const {
     cart,
     removeFromCart,
@@ -18,20 +19,35 @@ function Cart() {
   const formatPrice = (price) =>
     `₹${Number(price).toLocaleString('en-IN')}`
 
+  const card = darkMode
+    ? 'border-[#262626] bg-[#111111]'
+    : 'border-[#E5E7EB] bg-white'
+
+  const muted = darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white sm:px-6 lg:px-8">
+    <main
+      className={`min-h-screen px-4 py-8 transition-colors sm:px-6 lg:px-8 ${
+        darkMode
+          ? 'bg-[#050505] text-[#F5F5F5]'
+          : 'bg-[#F7F8F6] text-[#171717]'
+      }`}
+    >
       <div className="mx-auto max-w-5xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Your Cart
           </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
+
+          <p className={`mt-2 ${muted}`}>
             Review your items before checkout.
           </p>
         </div>
 
         {cart.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div
+            className={`rounded-2xl border px-6 py-16 text-center shadow-sm ${card}`}
+          >
             <div className="text-6xl" aria-hidden="true">
               🛒
             </div>
@@ -40,13 +56,17 @@ function Cart() {
               Your cart is empty
             </h2>
 
-            <p className="mt-2 text-slate-600 dark:text-slate-400">
+            <p className={`mt-2 ${muted}`}>
               Looks like you haven't added anything yet.
             </p>
 
             <Link
               to="/products"
-              className="mt-6 inline-block rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              className={`mt-6 inline-block rounded-xl px-6 py-3 font-semibold transition ${
+                darkMode
+                  ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                  : 'bg-[#15803D] text-white hover:bg-[#166534]'
+              }`}
             >
               Continue Shopping
             </Link>
@@ -57,11 +77,13 @@ function Cart() {
               {cart.map((product) => (
                 <div
                   key={product.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center"
+                  className={`flex flex-col gap-4 rounded-2xl border p-4 shadow-sm transition sm:flex-row sm:items-center ${card}`}
                 >
                   <Link
                     to={`/products/${product.id}`}
-                    className="flex h-36 shrink-0 items-center justify-center rounded-xl bg-slate-100 p-4 dark:bg-slate-800 sm:w-36"
+                    className={`flex h-36 shrink-0 items-center justify-center rounded-xl p-4 sm:w-36 ${
+                      darkMode ? 'bg-[#0B0B0B]' : 'bg-[#F7F8F6]'
+                    }`}
                   >
                     <img
                       src={product.image}
@@ -75,7 +97,7 @@ function Cart() {
                       {product.name}
                     </h2>
 
-                    <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                    <p className={`mt-1 text-sm leading-6 ${muted}`}>
                       {product.description}
                     </p>
 
@@ -84,11 +106,21 @@ function Cart() {
                     </p>
 
                     <div className="mt-4 flex flex-wrap items-center gap-3">
-                      <div className="flex items-center rounded-lg border border-slate-300 dark:border-slate-700">
+                      <div
+                        className={`flex items-center rounded-lg border ${
+                          darkMode
+                            ? 'border-[#262626]'
+                            : 'border-[#E5E7EB]'
+                        }`}
+                      >
                         <button
                           onClick={() => decreaseQuantity(product.id)}
                           aria-label={`Decrease quantity of ${product.name}`}
-                          className="px-3 py-2 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+                          className={`px-3 py-2 transition ${
+                            darkMode
+                              ? 'hover:bg-[#050505]'
+                              : 'hover:bg-[#F7F8F6]'
+                          }`}
                         >
                           −
                         </button>
@@ -100,7 +132,11 @@ function Cart() {
                         <button
                           onClick={() => increaseQuantity(product.id)}
                           aria-label={`Increase quantity of ${product.name}`}
-                          className="px-3 py-2 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+                          className={`px-3 py-2 transition ${
+                            darkMode
+                              ? 'hover:bg-[#050505]'
+                              : 'hover:bg-[#F7F8F6]'
+                          }`}
                         >
                           +
                         </button>
@@ -108,7 +144,7 @@ function Cart() {
 
                       <button
                         onClick={() => removeFromCart(product.id)}
-                        className="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+                        className="rounded-lg px-3 py-2 text-sm font-semibold text-red-500 transition hover:bg-red-500/10"
                       >
                         Remove
                       </button>
@@ -116,9 +152,10 @@ function Cart() {
                   </div>
 
                   <div className="sm:text-right">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className={`text-xs ${muted}`}>
                       Subtotal
                     </p>
+
                     <p className="mt-1 text-lg font-bold">
                       {formatPrice(
                         Number(product.price) * product.quantity
@@ -130,20 +167,26 @@ function Cart() {
 
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-slate-700 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
+                className={`inline-flex items-center gap-2 py-2 text-sm font-semibold transition ${
+                  darkMode
+                    ? 'text-[#A3A3A3] hover:text-[#22C55E]'
+                    : 'text-[#525252] hover:text-[#15803D]'
+                }`}
               >
                 <span aria-hidden="true">←</span>
                 Continue Shopping
               </Link>
             </div>
 
-            <aside className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:sticky lg:top-24">
+            <aside
+              className={`rounded-2xl border p-6 shadow-sm lg:sticky lg:top-24 ${card}`}
+            >
               <h2 className="text-xl font-bold">
                 Order Summary
               </h2>
 
               <div className="mt-5 space-y-4">
-                <div className="flex justify-between gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className={`flex justify-between gap-3 text-sm ${muted}`}>
                   <span>Items</span>
                   <span>
                     {cart.reduce(
@@ -153,12 +196,18 @@ function Cart() {
                   </span>
                 </div>
 
-                <div className="flex justify-between gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className={`flex justify-between gap-3 text-sm ${muted}`}>
                   <span>Delivery</span>
                   <span>Calculated at checkout</span>
                 </div>
 
-                <div className="border-t border-slate-200 pt-4 dark:border-slate-800">
+                <div
+                  className={`border-t pt-4 ${
+                    darkMode
+                      ? 'border-[#262626]'
+                      : 'border-[#E5E7EB]'
+                  }`}
+                >
                   <div className="flex justify-between gap-3 text-lg font-bold">
                     <span>Total</span>
                     <span>{formatPrice(total)}</span>
@@ -168,12 +217,16 @@ function Cart() {
 
               <Link
                 to="/checkout"
-                className="mt-6 block w-full rounded-xl bg-slate-900 px-4 py-3 text-center font-semibold text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                className={`mt-6 block w-full rounded-xl px-4 py-3 text-center font-semibold transition ${
+                  darkMode
+                    ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                    : 'bg-[#15803D] text-white hover:bg-[#166534]'
+                }`}
               >
                 Proceed to Checkout
               </Link>
 
-              <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
+              <p className={`mt-4 text-center text-xs ${muted}`}>
                 Your order total updates automatically.
               </p>
             </aside>

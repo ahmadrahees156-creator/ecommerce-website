@@ -4,23 +4,27 @@ import { useTheme } from '../context/ThemeContext'
 function About() {
   const { darkMode } = useTheme()
 
-  const cardClass = `rounded-xl border p-6 ${
+  const cardClass = `rounded-2xl border p-6 transition-colors ${
     darkMode
-      ? 'border-gray-700 bg-gray-800'
-      : 'border-gray-200 bg-white'
+      ? 'border-[#262626] bg-[#111111]'
+      : 'border-[#E5E7EB] bg-white'
   }`
 
   return (
     <div
-      className={`min-h-screen px-4 py-12 sm:px-8 ${
+      className={`min-h-screen px-4 py-12 transition-colors sm:px-8 ${
         darkMode
-          ? 'bg-gray-950 text-white'
-          : 'bg-gray-50 text-gray-900'
+          ? 'bg-[#050505] text-[#F5F5F5]'
+          : 'bg-[#F7F8F6] text-[#171717]'
       }`}
     >
       <div className="mx-auto max-w-5xl">
         <div className="mb-12 text-center">
-          <p className="mb-3 font-semibold text-blue-500">
+          <p
+            className={`mb-3 font-semibold ${
+              darkMode ? 'text-[#22C55E]' : 'text-[#15803D]'
+            }`}
+          >
             ABOUT SHOPKART
           </p>
 
@@ -30,11 +34,11 @@ function About() {
 
           <p
             className={`mx-auto max-w-2xl text-base sm:text-lg ${
-              darkMode ? 'text-gray-300' : 'text-gray-600'
+              darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
             }`}
           >
-            ShopKart is a team-built e-commerce project designed to
-            make browsing products and managing your cart simple
+            ShopKart is a team-built e-commerce project designed
+            to make browsing products and managing your cart simple
             and convenient.
           </p>
         </div>
@@ -42,10 +46,16 @@ function About() {
         <div className="mb-10 grid gap-6 md:grid-cols-3">
           <div className={cardClass}>
             <div className="mb-4 text-3xl">🛍️</div>
+
             <h2 className="mb-2 text-xl font-semibold">
               Explore Products
             </h2>
-            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+
+            <p
+              className={
+                darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+              }
+            >
               Browse products, search by name, and use filters to
               find what you need.
             </p>
@@ -53,10 +63,16 @@ function About() {
 
           <div className={cardClass}>
             <div className="mb-4 text-3xl">🛒</div>
+
             <h2 className="mb-2 text-xl font-semibold">
               Easy Cart
             </h2>
-            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+
+            <p
+              className={
+                darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+              }
+            >
               Add products, update quantities, and review your
               order summary before checkout.
             </p>
@@ -64,10 +80,16 @@ function About() {
 
           <div className={cardClass}>
             <div className="mb-4 text-3xl">💻</div>
+
             <h2 className="mb-2 text-xl font-semibold">
               Our Technology
             </h2>
-            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+
+            <p
+              className={
+                darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+              }
+            >
               Built with React and Tailwind CSS, with API
               integration as part of the project.
             </p>
@@ -79,13 +101,21 @@ function About() {
             Start Exploring
           </h2>
 
-          <p className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p
+            className={`mb-6 ${
+              darkMode ? 'text-[#A3A3A3]' : 'text-[#525252]'
+            }`}
+          >
             Discover products and enjoy a simple shopping experience.
           </p>
 
           <Link
             to="/products"
-            className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+            className={`inline-block rounded-xl px-6 py-3 font-semibold text-white transition ${
+              darkMode
+                ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
+                : 'bg-[#15803D] hover:bg-[#166534]'
+            }`}
           >
             Explore Products →
           </Link>
