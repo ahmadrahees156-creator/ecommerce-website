@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getProducts, getCategories } from '../services/productApi'
 import { useTheme } from '../context/ThemeContext'
+import ProductCard from '../components/ProductCard'
 
 const formatPrice = (price) =>
   `₹${Number(price || 0).toLocaleString('en-IN')}`
@@ -232,7 +233,8 @@ function Products() {
 
           {categories.map((category, index) => {
             const name = categoryName(category)
-            const active = categoryName(selectedCategory) === name &&
+            const active =
+              categoryName(selectedCategory) === name &&
               selectedCategory !== 'All'
 
             return (
@@ -273,7 +275,10 @@ function Products() {
           className="w-full cursor-pointer accent-emerald-800"
         />
 
-        <div className="mt-2 flex justify-between text-xs" style={{ color: c.muted }}>
+        <div
+          className="mt-2 flex justify-between text-xs"
+          style={{ color: c.muted }}
+        >
           <span>₹0</span>
           <span>₹1,00,000</span>
         </div>
@@ -320,7 +325,8 @@ function Products() {
             style={{
               borderColor: c.border,
               color: c.text,
-              backgroundColor: maxPrice === item.price ? c.soft : 'transparent',
+              backgroundColor:
+                maxPrice === item.price ? c.soft : 'transparent',
             }}
           >
             {item.label}
@@ -340,7 +346,9 @@ function Products() {
           className="mb-5 flex flex-wrap items-center gap-2 text-xs"
           style={{ color: c.muted }}
         >
-          <Link to="/home" className="hover:underline">Home</Link>
+          <Link to="/home" className="hover:underline">
+            Home
+          </Link>
           <span>/</span>
           <span style={{ color: c.accent }}>Shop</span>
         </div>
@@ -394,13 +402,6 @@ function Products() {
             className="pointer-events-none absolute -right-10 -top-16 h-64 w-64 rounded-full border-[35px] opacity-30 sm:right-10 sm:top-0 sm:h-80 sm:w-80"
             style={{ borderColor: darkMode ? '#D6B887' : '#60977B' }}
           />
-
-          <div
-            className="pointer-events-none absolute bottom-0 right-12 hidden text-8xl opacity-30 lg:block"
-            aria-hidden="true"
-          >
-            ✳
-          </div>
         </section>
 
         <section className="mb-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -423,7 +424,10 @@ function Products() {
               </span>
               <div className="min-w-0">
                 <p className="truncate text-xs font-bold sm:text-sm">{title}</p>
-                <p className="mt-1 truncate text-[10px] sm:text-xs" style={{ color: c.muted }}>
+                <p
+                  className="mt-1 truncate text-[10px] sm:text-xs"
+                  style={{ color: c.muted }}
+                >
                   {subtitle}
                 </p>
               </div>
@@ -518,11 +522,16 @@ function Products() {
               <div>
                 <h3 className="text-lg font-bold">Featured Products</h3>
                 <p className="mt-1 text-xs" style={{ color: c.muted }}>
-                  {loading ? 'Loading your collection...' : `${filteredProducts.length} products found`}
+                  {loading
+                    ? 'Loading your collection...'
+                    : `${filteredProducts.length} products found`}
                 </p>
               </div>
 
-              {(search || selectedCategory !== 'All' || selectedBrands.length > 0 || maxPrice < 100000) && (
+              {(search ||
+                selectedCategory !== 'All' ||
+                selectedBrands.length > 0 ||
+                maxPrice < 100000) && (
                 <button
                   type="button"
                   onClick={resetFilters}
@@ -535,18 +544,33 @@ function Products() {
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, index) => (
                   <div
                     key={index}
                     className="animate-pulse overflow-hidden rounded-xl border"
-                    style={{ backgroundColor: c.card, borderColor: c.border }}
+                    style={{
+                      backgroundColor: c.card,
+                      borderColor: c.border,
+                    }}
                   >
-                    <div className="aspect-square" style={{ backgroundColor: c.soft }} />
+                    <div
+                      className="aspect-square"
+                      style={{ backgroundColor: c.soft }}
+                    />
                     <div className="space-y-3 p-4">
-                      <div className="h-3 rounded" style={{ backgroundColor: c.soft }} />
-                      <div className="h-3 w-2/3 rounded" style={{ backgroundColor: c.soft }} />
-                      <div className="h-8 rounded" style={{ backgroundColor: c.soft }} />
+                      <div
+                        className="h-3 rounded"
+                        style={{ backgroundColor: c.soft }}
+                      />
+                      <div
+                        className="h-3 w-2/3 rounded"
+                        style={{ backgroundColor: c.soft }}
+                      />
+                      <div
+                        className="h-8 rounded"
+                        style={{ backgroundColor: c.soft }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -571,7 +595,9 @@ function Products() {
                 className="rounded-xl border px-5 py-16 text-center"
                 style={{ backgroundColor: c.card, borderColor: c.border }}
               >
-                <div className="mb-3 text-4xl" aria-hidden="true">⌕</div>
+                <div className="mb-3 text-4xl" aria-hidden="true">
+                  ⌕
+                </div>
                 <h3
                   className="text-2xl font-bold"
                   style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
@@ -591,94 +617,20 @@ function Products() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4">
                 {filteredProducts.map((product) => {
                   const id = product._id ?? product.id
-                  const name = getProductName(product)
-                  const image = getProductImage(product)
-                  const category =
-                    typeof product.category === 'object'
-                      ? categoryName(product.category)
-                      : product.category ?? 'Featured'
 
                   return (
-                    <Link
-                      key={id}
-                      to={`/products/${id}`}
-                      className="group min-w-0 overflow-hidden rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                      style={{
-                        backgroundColor: c.card,
-                        borderColor: c.border,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = c.accent
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = c.border
-                      }}
-                    >
-                      <div
-                        className="relative aspect-square overflow-hidden p-3 sm:p-4"
-                        style={{ backgroundColor: c.image }}
-                      >
-                        {image ? (
-                          <img
-                            src={image}
-                            alt={name}
-                            loading="lazy"
-                            className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div
-                            className="flex h-full items-center justify-center text-xs"
-                            style={{ color: c.muted }}
-                          >
-                            Image unavailable
-                          </div>
-                        )}
-
-                        <span
-                          className="absolute left-2 top-2 rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wide"
-                          style={{
-                            backgroundColor: c.card,
-                            color: c.accent,
-                          }}
-                        >
-                          {category || 'Featured'}
-                        </span>
-
-                        <span
-                          className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full text-lg opacity-0 shadow transition group-hover:opacity-100"
-                          style={{ backgroundColor: c.card, color: c.accent }}
-                          aria-hidden="true"
-                        >
-                          ↗
-                        </span>
-                      </div>
-
-                      <div className="p-3 sm:p-4">
-                        <h3
-                          className="line-clamp-2 min-h-10 text-sm font-semibold leading-5 sm:text-base"
-                          style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
-                        >
-                          {name}
-                        </h3>
-
-                        <p className="mt-2 text-lg font-bold" style={{ color: c.accent }}>
-                          {formatPrice(product.price)}
-                        </p>
-
-                        <div
-                          className="mt-3 rounded-lg py-2.5 text-center text-xs font-semibold transition group-hover:opacity-90 sm:text-sm"
-                          style={{
-                            backgroundColor: c.button,
-                            color: c.buttonText,
-                          }}
-                        >
-                          View Product →
-                        </div>
-                      </div>
-                    </Link>
+                    <div key={id} className="min-w-0">
+                      <ProductCard
+                        id={id}
+                        name={getProductName(product)}
+                        description={product.description}
+                        price={product.price}
+                        image={getProductImage(product)}
+                      />
+                    </div>
                   )
                 })}
               </div>
