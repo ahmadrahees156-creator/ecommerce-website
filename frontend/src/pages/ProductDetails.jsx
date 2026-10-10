@@ -119,8 +119,12 @@ function ProductDetails() {
         if (!cancelled && Array.isArray(items)) {
           setWishlisted(
             items.some((item) =>
-              String(item._id ?? item.id ?? item.product?._id ?? item.product?.id) ===
-              String(id)
+              String(
+                item._id ??
+                  item.id ??
+                  item.product?._id ??
+                  item.product?.id
+              ) === String(id)
             )
           )
         }
@@ -141,10 +145,11 @@ function ProductDetails() {
         ...(Array.isArray(product.images) ? product.images : []),
         product.imageUrl,
         product.image,
-      ].filter((image, index, array) =>
-        typeof image === 'string' &&
-        image.trim() &&
-        array.indexOf(image) === index
+      ].filter(
+        (image, index, array) =>
+          typeof image === 'string' &&
+          image.trim() &&
+          array.indexOf(image) === index
       )
     : []
 
@@ -230,9 +235,11 @@ function ProductDetails() {
         >
           Product unavailable
         </p>
+
         <p className="mt-3 text-sm" style={{ color: c.muted }}>
           {error || 'This product could not be found.'}
         </p>
+
         <Link
           to="/products"
           className="mt-6 inline-block rounded-lg px-5 py-3 text-sm font-semibold"
@@ -251,19 +258,39 @@ function ProductDetails() {
     >
       <div className="mx-auto max-w-7xl">
         <nav
-          className="mb-7 flex flex-wrap items-center gap-2 text-xs"
+          className="mb-4 flex flex-wrap items-center gap-2 text-xs"
           style={{ color: c.muted }}
         >
-          <Link to="/home" className="hover:underline">Home</Link>
+          <Link to="/home" className="hover:underline">
+            Home
+          </Link>
           <span>/</span>
-          <Link to="/products" className="hover:underline">Products</Link>
+          <Link to="/products" className="hover:underline">
+            Products
+          </Link>
           <span>/</span>
           <span style={{ color: c.accent }}>{name}</span>
         </nav>
 
-        <section
-          className="grid gap-7 lg:grid-cols-2 lg:gap-12"
-        >
+        <div className="mb-7">
+          <button
+            type="button"
+            onClick={() => navigate('/products')}
+            className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition-all duration-200 hover:-translate-x-1"
+            style={{
+              backgroundColor: c.card,
+              color: c.text,
+              borderColor: c.border,
+            }}
+          >
+            <span className="text-lg" aria-hidden="true">
+              ←
+            </span>
+            Back to Products
+          </button>
+        </div>
+
+        <section className="grid gap-7 lg:grid-cols-2 lg:gap-12">
           <div className="min-w-0">
             <div
               className="relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl border p-6 sm:p-10"
@@ -340,6 +367,7 @@ function ProductDetails() {
               <span className="text-3xl font-bold">
                 ₹{price.toLocaleString('en-IN')}
               </span>
+
               <span
                 className="rounded-full px-3 py-1 text-xs font-medium"
                 style={{ backgroundColor: c.soft, color: c.accent }}
@@ -360,13 +388,18 @@ function ProductDetails() {
               style={{ borderColor: c.border, backgroundColor: c.card }}
             >
               <div>
-                <p className="text-xs" style={{ color: c.muted }}>Collection</p>
+                <p className="text-xs" style={{ color: c.muted }}>
+                  Collection
+                </p>
                 <p className="mt-1 text-sm font-semibold">
                   {category || 'Everyday essentials'}
                 </p>
               </div>
+
               <div>
-                <p className="text-xs" style={{ color: c.muted }}>Availability</p>
+                <p className="text-xs" style={{ color: c.muted }}>
+                  Availability
+                </p>
                 <p className="mt-1 text-sm font-semibold">
                   {product.stock === undefined
                     ? 'Check at checkout'
@@ -382,7 +415,10 @@ function ProductDetails() {
 
               <div
                 className="inline-flex items-center overflow-hidden rounded-lg border"
-                style={{ borderColor: c.border, backgroundColor: c.card }}
+                style={{
+                  borderColor: c.border,
+                  backgroundColor: c.card,
+                }}
               >
                 <button
                   type="button"
@@ -413,11 +449,18 @@ function ProductDetails() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                disabled={product.stock !== undefined && Number(product.stock) <= 0}
+                disabled={
+                  product.stock !== undefined &&
+                  Number(product.stock) <= 0
+                }
                 className="rounded-lg px-5 py-4 text-sm font-bold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ backgroundColor: c.button, color: c.buttonText }}
+                style={{
+                  backgroundColor: c.button,
+                  color: c.buttonText,
+                }}
               >
-                Add to Cart · ₹{(price * quantity).toLocaleString('en-IN')}
+                Add to Cart · ₹
+                {(price * quantity).toLocaleString('en-IN')}
               </button>
 
               <button
@@ -453,15 +496,30 @@ function ProductDetails() {
               style={{ borderColor: c.border }}
             >
               {[
-                ['✓', 'Carefully selected', 'Discover products for everyday living.'],
-                ['↻', 'Easy order access', 'Review your purchases in your account.'],
-                ['♡', 'Save your favourites', 'Add products to your wishlist for later.'],
+                [
+                  '✓',
+                  'Carefully selected',
+                  'Discover products for everyday living.',
+                ],
+                [
+                  '↻',
+                  'Easy order access',
+                  'Review your purchases in your account.',
+                ],
+                [
+                  '♡',
+                  'Save your favourites',
+                  'Add products to your wishlist for later.',
+                ],
               ].map(([icon, title, subtitle]) => (
                 <div key={title} className="flex items-start gap-3">
                   <span style={{ color: c.accent }}>{icon}</span>
                   <div>
                     <p className="text-sm font-semibold">{title}</p>
-                    <p className="mt-1 text-xs leading-5" style={{ color: c.muted }}>
+                    <p
+                      className="mt-1 text-xs leading-5"
+                      style={{ color: c.muted }}
+                    >
                       {subtitle}
                     </p>
                   </div>
@@ -473,7 +531,10 @@ function ProductDetails() {
 
         <section
           className="mt-12 overflow-hidden rounded-2xl border"
-          style={{ backgroundColor: c.card, borderColor: c.border }}
+          style={{
+            backgroundColor: c.card,
+            borderColor: c.border,
+          }}
         >
           <div
             className="flex flex-wrap gap-6 border-b px-5 sm:px-8"
@@ -489,7 +550,8 @@ function ProductDetails() {
                 onClick={() => setActiveTab(tab)}
                 className="border-b-2 py-4 text-sm font-semibold transition"
                 style={{
-                  borderColor: activeTab === tab ? c.accent : 'transparent',
+                  borderColor:
+                    activeTab === tab ? c.accent : 'transparent',
                   color: activeTab === tab ? c.accent : c.muted,
                 }}
               >
@@ -503,11 +565,17 @@ function ProductDetails() {
               <>
                 <h2
                   className="text-2xl font-bold"
-                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                  style={{
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                  }}
                 >
                   About this product
                 </h2>
-                <p className="mt-4 max-w-3xl text-sm leading-7" style={{ color: c.muted }}>
+
+                <p
+                  className="mt-4 max-w-3xl text-sm leading-7"
+                  style={{ color: c.muted }}
+                >
                   {description}
                 </p>
               </>

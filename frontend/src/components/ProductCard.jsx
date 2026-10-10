@@ -29,7 +29,9 @@ function ProductCard({ id, name, description, price, image }) {
     getWishlist()
       .then((data) => {
         setWishlisted(
-          (data?.products || []).some((item) => item._id === id)
+          (data?.products || []).some(
+            (item) => item._id === id
+          )
         )
       })
       .catch(() => {})
@@ -102,7 +104,7 @@ function ProductCard({ id, name, description, price, image }) {
         <Link
           to={`/products/${id}`}
           aria-label={`View ${name}`}
-          className={`flex h-44 items-center justify-center overflow-hidden p-4 sm:h-48 ${imageSurface}`}
+          className={`flex h-48 items-center justify-center overflow-hidden p-5 sm:h-52 ${imageSurface}`}
         >
           {image ? (
             <img
@@ -123,7 +125,9 @@ function ProductCard({ id, name, description, price, image }) {
           onClick={toggleWishlist}
           disabled={wishlistLoading}
           aria-label={
-            wishlisted ? 'Remove from wishlist' : 'Add to wishlist'
+            wishlisted
+              ? 'Remove from wishlist'
+              : 'Add to wishlist'
           }
           aria-pressed={wishlisted}
           className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition hover:scale-110 disabled:opacity-50 ${
@@ -156,19 +160,21 @@ function ProductCard({ id, name, description, price, image }) {
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-3 sm:p-4">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <Link
           to={`/products/${id}`}
-          className="line-clamp-2 min-h-11 text-sm font-semibold leading-5 transition hover:underline sm:text-base"
+          className="line-clamp-2 min-h-12 text-sm font-semibold leading-6 transition hover:underline sm:text-base"
         >
           {name}
         </Link>
 
-        <p className={`mt-2 line-clamp-2 min-h-9 text-xs leading-5 ${secondaryText}`}>
+        <p
+          className={`mt-3 line-clamp-2 min-h-10 text-xs leading-5 ${secondaryText}`}
+        >
           {description || 'Explore quality products at ShopKart.'}
         </p>
 
-        <div className="mt-3 flex items-center justify-between gap-2">
+        <div className="mt-4 flex items-center justify-between gap-2">
           <p className="text-lg font-bold tracking-tight sm:text-xl">
             ₹{Number(price).toLocaleString('en-IN')}
           </p>
@@ -193,10 +199,10 @@ function ProductCard({ id, name, description, price, image }) {
           </p>
         )}
 
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+        <div className="mt-auto grid grid-cols-2 gap-3 pt-5">
           <Link
             to={`/products/${id}`}
-            className={`flex min-h-10 items-center justify-center rounded-lg border px-2 py-2 text-center text-xs font-semibold transition sm:text-sm ${buttonSecondary}`}
+            className={`flex min-h-11 items-center justify-center rounded-lg border px-2 py-2 text-center text-xs font-semibold transition sm:text-sm ${buttonSecondary}`}
           >
             Details
           </Link>
@@ -204,7 +210,7 @@ function ProductCard({ id, name, description, price, image }) {
           <button
             type="button"
             onClick={handleAddToCart}
-            className={`flex min-h-10 items-center justify-center rounded-lg px-2 py-2 text-xs font-semibold transition sm:text-sm ${buttonPrimary}`}
+            className={`flex min-h-11 items-center justify-center rounded-lg px-2 py-2 text-xs font-semibold transition active:scale-95 sm:text-sm ${buttonPrimary}`}
           >
             {added ? '✓ Added' : 'Add to Cart'}
           </button>
