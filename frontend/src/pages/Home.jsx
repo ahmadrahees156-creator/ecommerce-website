@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getProducts, getCategories } from '../services/productApi'
@@ -12,515 +13,441 @@ function Home() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    let active = true
+
     const loadHomeData = async () => {
       try {
         setLoading(true)
         setError('')
 
         const [productsResponse, categoriesResponse] = await Promise.all([
-          getProducts({
-            page: 1,
-            limit: 6,
-            sort: 'newest',
-          }),
+          getProducts({ page: 1, limit: 6, sort: 'newest' }),
           getCategories(),
         ])
 
-        setProducts(productsResponse?.data || [])
-        setCategories(categoriesResponse || [])
+        if (!active) return
+
+        const productData =
+          productsResponse?.data?.products ??
+          productsResponse?.data?.items ??
+          productsResponse?.data ??
+          productsResponse?.products ??
+          productsResponse?.items ??
+          []
+
+        setProducts(Array.isArray(productData) ? productData : [])
+        setCategories(Array.isArray(categoriesResponse) ? categoriesResponse : [])
       } catch (err) {
+        if (!active) return
+
         setError(
           err.response?.data?.message ||
-            'Unable to load products. Please make sure the backend is running.',
+            'Unable to load products. Please check the backend connection.'
         )
       } finally {
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
     loadHomeData()
-  }, [])
 
-  const getProductImage = (imageUrl) => {
-    if (imageUrl) {
-      return imageUrl
+    return () => {
+      active = false
     }
-
-    return 'https://via.placeholder.com/600x400?text=No+Image'
-  }
+  }, [])
 
   const theme = {
     page: darkMode
-      ? 'bg-[#050505] text-[#F5F5F5]'
-      : 'bg-[#F7F8F6] text-[#171717]',
-
+      ? 'bg-[#101010] text-[#F5F5F5]'
+      : 'bg-[#F8F5EC] text-[#173D30]',
     card: darkMode
-      ? 'border-[#262626] bg-[#111111]'
-      : 'border-[#E5E7EB] bg-white',
-
-    muted: darkMode
-      ? 'text-[#A3A3A3]'
-      : 'text-[#525252]',
-
-    secondary: darkMode
-      ? 'bg-[#111111]'
-      : 'bg-white',
-
-    soft: darkMode
-      ? 'bg-[#0B0B0B]'
-      : 'bg-[#F7F8F6]',
-
-    border: darkMode
-      ? 'border-[#262626]'
-      : 'border-[#E5E7EB]',
-
-    green: darkMode
-      ? 'text-[#22C55E]'
-      : 'text-[#15803D]',
-
-    greenBg: darkMode
-      ? 'bg-[#052E16]'
-      : 'bg-[#DCFCE7]',
-
-    greenButton: darkMode
-      ? 'bg-[#22C55E] text-[#050505] hover:bg-[#16A34A]'
-      : 'bg-[#15803D] text-white hover:bg-[#166534]',
+      ? 'border-[#383838] bg-[#1A1A1A]'
+      : 'border-[#E4E9DF] bg-white',
+    muted: darkMode ? 'text-[#B5B5B5]' : 'text-[#68786D]',
+    surface: darkMode ? 'bg-[#202020]' : 'bg-[#F1F0E8]',
+    border: darkMode ? 'border-[#383838]' : 'border-[#E4E9DF]',
+    accent: darkMode ? 'text-[#D6B887]' : 'text-[#047857]',
+    button: darkMode
+      ? 'bg-[#E5E2DC] text-[#171717] hover:bg-[#D6B887]'
+      : 'bg-[#064E3B] text-white hover:bg-[#047857]',
   }
 
+  const getImage = (product) =>
+    product?.imageUrl ||
+    product?.image ||
+    product?.images?.[0] ||
+    'https://placehold.co/600x500/F1F0E8/173D30?text=ShopKart'
+
+  const getId = (product) => product?._id ?? product?.id
+
+  const getName = (product) =>
+    product?.name ?? product?.title ?? 'Product'
+
+  const getCategoryName = (category) =>
+    typeof category === 'string'
+      ? category
+      : category?.name ?? category?.title ?? category?.categoryName ?? 'Category'
+
+  const featuredProducts = products.slice(0, 6)
+
   return (
-    <main
-      className={`min-h-screen transition-colors duration-300 ${theme.page}`}
-    >
-      {/* Hero Section */}
-      <section
-        className={`relative overflow-hidden border-b transition-colors duration-300 ${theme.border} ${
-          darkMode ? 'bg-[#050505]' : 'bg-[#F7F8F6]'
-        }`}
-      >
+    <main className={`min-h-screen transition-colors duration-300 ${theme.page}`}>
+      {/* Hero */}
+      <section className="px-4 pb-12 pt-8 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8">
         <div
-          className={`absolute -right-40 -top-40 h-96 w-96 rounded-full blur-3xl ${
-            darkMode ? 'bg-[#22C55E]/10' : 'bg-[#15803D]/8'
-          }`}
-        />
+          className={`relative mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] border ${theme.border} ${
+            darkMode ? 'bg-[#181B19]' : 'bg-[#E8EDE2]'
+          } lg:grid-cols-2`}
+        >
+          <div className="relative z-10 flex flex-col justify-center p-7 sm:p-12 lg:p-16">
+            <p
+              className={`mb-5 text-xs font-semibold uppercase tracking-[0.25em] ${theme.accent}`}
+            >
+              Discover something special
+            </p>
 
-        <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            {/* Hero Content */}
-            <div>
-              <div
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-sm ${theme.card} ${theme.green}`}
+            <h1 className="max-w-xl font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">
+              Everyday essentials.
+              <span className={`mt-1 block ${theme.accent}`}>
+                Exceptional finds.
+              </span>
+            </h1>
+
+            <p className={`mt-6 max-w-lg text-base leading-7 sm:text-lg ${theme.muted}`}>
+              Find products you'll love, explore new favourites and enjoy a
+              simpler way to shop with ShopKart.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                to="/products"
+                className={`rounded-full px-7 py-3.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${theme.button}`}
               >
-                <span>✨</span>
-                Welcome to ShopKart
-              </div>
+                Explore collection <span aria-hidden="true">↗</span>
+              </Link>
 
-              <h1 className="mt-6 max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-                Find what you need.
-                <span className={`block ${theme.green}`}>
-                  Shop with ease.
-                </span>
-              </h1>
-
-              <p
-                className={`mt-6 max-w-xl text-lg leading-8 ${theme.muted}`}
+              <Link
+                to="/products"
+                className={`rounded-full border px-7 py-3.5 text-sm font-semibold transition ${
+                  darkMode
+                    ? 'border-[#555B55] hover:border-[#D6B887]'
+                    : 'border-[#C6D0C2] hover:border-[#047857]'
+                }`}
               >
-                Explore quality products, discover great deals and enjoy a
-                simple shopping experience made for you.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link
-                  to="/products"
-                  className={`rounded-xl px-7 py-3.5 font-semibold shadow-lg transition hover:-translate-y-0.5 ${theme.greenButton}`}
-                >
-                  Shop Now →
-                </Link>
-
-                <Link
-                  to="/products"
-                  className={`rounded-xl border px-7 py-3.5 font-semibold transition ${
-                    darkMode
-                      ? 'border-[#262626] bg-[#111111] text-[#F5F5F5] hover:border-[#22C55E] hover:text-[#22C55E]'
-                      : 'border-[#D1D5DB] bg-white text-[#171717] hover:border-[#15803D] hover:text-[#15803D]'
-                  }`}
-                >
-                  Explore Products
-                </Link>
-              </div>
-
-              <div className="mt-9 flex flex-wrap gap-6 text-sm">
-                <div className={`flex items-center gap-2 ${theme.muted}`}>
-                  <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-full ${theme.greenBg} ${theme.green}`}
-                  >
-                    ✓
-                  </span>
-                  Quality Products
-                </div>
-
-                <div className={`flex items-center gap-2 ${theme.muted}`}>
-                  <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-full ${theme.greenBg} ${theme.green}`}
-                  >
-                    ✓
-                  </span>
-                  Secure Shopping
-                </div>
-
-                <div className={`flex items-center gap-2 ${theme.muted}`}>
-                  <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-full ${theme.greenBg} ${theme.green}`}
-                  >
-                    ✓
-                  </span>
-                  Easy Checkout
-                </div>
-              </div>
+                Browse products
+              </Link>
             </div>
 
-            {/* Database Product */}
-            <div className="relative">
-              {loading ? (
-                <div
-                  className={`flex h-96 items-center justify-center rounded-3xl border shadow-xl ${theme.card}`}
-                >
-                  <p className={theme.muted}>Loading products...</p>
-                </div>
-              ) : products.length > 0 ? (
-                <div
-                  className={`rounded-3xl border p-5 shadow-xl transition-colors duration-300 sm:p-7 ${theme.card}`}
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p
-                        className={`text-xs font-semibold uppercase tracking-wider ${theme.muted}`}
-                      >
-                        Featured Product
-                      </p>
-
-                      <h2 className="mt-1 text-2xl font-bold">
-                        {products[0].name}
-                      </h2>
-                    </div>
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${theme.greenBg} ${theme.green}`}
-                    >
-                      {products[0].stock > 0
-                        ? 'In Stock'
-                        : 'Out of Stock'}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`mt-6 flex h-72 items-center justify-center rounded-2xl p-8 sm:h-80 ${theme.soft}`}
-                  >
-                    <img
-                      src={getProductImage(products[0].imageUrl)}
-                      alt={products[0].name}
-                      className="h-full w-full object-contain transition duration-300 hover:scale-105"
-                    />
-                  </div>
-
-                  <div className="mt-5 flex items-center justify-between gap-4">
-                    <div>
-                      <p className={`text-sm ${theme.muted}`}>
-                        Price
-                      </p>
-
-                      <p className="mt-1 text-2xl font-black">
-                        ₹
-                        {Number(products[0].price).toLocaleString(
-                          'en-IN',
-                        )}
-                      </p>
-                    </div>
-
-                    <Link
-                      to={`/products/${products[0]._id}`}
-                      className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition ${theme.greenButton}`}
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className={`flex h-96 items-center justify-center rounded-3xl border shadow-xl ${theme.card}`}
-                >
-                  <p className={theme.muted}>
-                    No products available.
-                  </p>
-                </div>
-              )}
+            <div className={`mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm ${theme.muted}`}>
+              <span>✓ Curated collection</span>
+              <span>✓ Easy browsing</span>
+              <span>✓ Simple checkout</span>
             </div>
+          </div>
+
+          <div className={`relative flex min-h-[330px] items-center justify-center p-6 sm:min-h-[430px] sm:p-10 lg:min-h-[570px] ${theme.surface}`}>
+            <div
+              className={`absolute h-64 w-64 rounded-full border sm:h-80 sm:w-80 ${
+                darkMode ? 'border-[#D6B887]/20' : 'border-[#064E3B]/15'
+              }`}
+            />
+            <div
+              className={`absolute h-48 w-48 rounded-full sm:h-60 sm:w-60 ${
+                darkMode ? 'bg-[#D6B887]/5' : 'bg-[#064E3B]/5'
+              }`}
+            />
+
+            {loading ? (
+              <div className={`relative z-10 text-sm ${theme.muted}`}>
+                Discovering products...
+              </div>
+            ) : featuredProducts.length > 0 ? (
+              <Link
+                to={`/products/${getId(featuredProducts[0])}`}
+                className={`relative z-10 w-full max-w-sm rounded-3xl border p-5 shadow-xl transition duration-300 hover:-translate-y-1 ${theme.card}`}
+              >
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <span className={`text-xs font-semibold uppercase tracking-[0.18em] ${theme.accent}`}>
+                    Featured find
+                  </span>
+                  <span className={`text-xs ${theme.muted}`}>01 / 06</span>
+                </div>
+
+                <div className={`flex h-64 items-center justify-center rounded-2xl p-5 sm:h-72 ${theme.surface}`}>
+                  <img
+                    src={getImage(featuredProducts[0])}
+                    alt={getName(featuredProducts[0])}
+                    className="h-full w-full object-contain transition duration-300 hover:scale-105"
+                  />
+                </div>
+
+                <div className="mt-5 flex items-end justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className={`text-xs ${theme.muted}`}>A favourite to explore</p>
+                    <h2 className="mt-1 truncate text-lg font-semibold">
+                      {getName(featuredProducts[0])}
+                    </h2>
+                  </div>
+
+                  <span className={`shrink-0 text-lg font-semibold ${theme.accent}`}>
+                    ₹{Number(featuredProducts[0].price ?? 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              <div className={`relative z-10 max-w-xs text-center ${theme.muted}`}>
+                Your next favourite find is waiting to be discovered.
+                <Link to="/products" className={`mt-4 block font-semibold ${theme.accent}`}>
+                  Browse products →
+                </Link>
+              </div>
+            )}
+
+            <span className={`absolute bottom-5 right-5 text-xs tracking-widest ${theme.muted}`}>
+              SHOPKART · YOUR EVERYDAY EDIT
+            </span>
           </div>
         </div>
       </section>
 
       {/* Categories */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-9">
-            <p
-              className={`text-sm font-semibold uppercase tracking-wider ${theme.green}`}
-            >
-              Explore
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+              Find your style
             </p>
-
-            <h2 className="mt-2 text-3xl font-bold">
-              Shop by Category
+            <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
+              Shop by category
             </h2>
-
-            <p className={`mt-2 ${theme.muted}`}>
-              Browse products based on what you're looking for.
+            <p className={`mt-3 max-w-lg text-sm leading-6 ${theme.muted}`}>
+              Start with a category and discover products picked for your needs.
             </p>
           </div>
 
-          {categories.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {categories.map((category) => (
+          <Link
+            to="/products"
+            className={`hidden shrink-0 text-sm font-semibold sm:block ${theme.accent}`}
+          >
+            All products ↗
+          </Link>
+        </div>
+
+        {categories.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+            {categories.slice(0, 8).map((category, index) => {
+              const name = getCategoryName(category)
+
+              return (
                 <Link
-                  to={`/products?category=${encodeURIComponent(category)}`}
-                  key={category}
-                  className={`group rounded-2xl border p-6 transition duration-300 hover:-translate-y-1 hover:shadow-lg ${theme.card} ${
-                    darkMode
-                      ? 'hover:border-[#22C55E]/60'
-                      : 'hover:border-[#15803D]/60'
+                  key={category?._id ?? category?.id ?? name}
+                  to={`/products?category=${encodeURIComponent(name)}`}
+                  className={`group rounded-2xl border p-4 transition duration-300 hover:-translate-y-1 sm:p-6 ${theme.card} ${
+                    darkMode ? 'hover:border-[#D6B887]/60' : 'hover:border-[#047857]/50'
                   }`}
                 >
-                  <div
-                    className={`flex h-14 w-14 items-center justify-center rounded-xl text-2xl ${theme.greenBg}`}
-                  >
-                    🛍️
-                  </div>
+                  <span className={`text-xs tracking-widest ${theme.muted}`}>
+                    0{index + 1}
+                  </span>
 
-                  <h3
-                    className={`mt-5 text-lg font-bold transition ${darkMode ? 'group-hover:text-[#22C55E]' : 'group-hover:text-[#15803D]'}`}
-                  >
-                    {category}
+                  <h3 className="mt-5 break-words text-base font-semibold sm:text-lg">
+                    {name}
                   </h3>
 
-                  <p className={`mt-2 text-sm ${theme.muted}`}>
-                    Explore products in this category.
-                  </p>
-
-                  <p className={`mt-4 text-sm font-semibold ${theme.green}`}>
+                  <span className={`mt-3 inline-block text-sm transition group-hover:translate-x-1 ${theme.accent}`}>
                     Explore →
-                  </p>
+                  </span>
                 </Link>
-              ))}
-            </div>
-          ) : (
-            <p className={theme.muted}>
-              No categories available.
-            </p>
-          )}
-        </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className={`rounded-2xl border p-6 text-sm ${theme.border} ${theme.muted}`}>
+            Categories will appear here when available.
+          </p>
+        )}
       </section>
 
-      {/* Featured Products */}
-      <section
-        className={`border-y py-16 transition-colors duration-300 ${theme.border} ${theme.secondary}`}
-      >
+      {/* Products */}
+      <section className={`border-y py-14 sm:py-16 ${theme.border} ${darkMode ? 'bg-[#151515]' : 'bg-[#F1F0E8]'}`}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-9 flex items-end justify-between">
+          <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p
-                className={`text-sm font-semibold uppercase tracking-wider ${theme.green}`}
-              >
-                Popular Picks
+              <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+                The latest edit
               </p>
-
-              <h2 className="mt-2 text-3xl font-bold">
-                Featured Products
+              <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
+                Products to discover
               </h2>
-
-              <p className={`mt-2 ${theme.muted}`}>
-                Take a look at some of our latest products.
+              <p className={`mt-3 text-sm ${theme.muted}`}>
+                Explore the latest additions to our collection.
               </p>
             </div>
 
             <Link
               to="/products"
-              className={`hidden font-semibold sm:block ${theme.green}`}
+              className={`hidden shrink-0 text-sm font-semibold sm:block ${theme.accent}`}
             >
-              View All →
+              View all ↗
             </Link>
           </div>
 
-          {loading ? (
-            <div className={`py-12 text-center ${theme.muted}`}>
-              Loading products...
-            </div>
-          ) : error ? (
-            <div className="rounded-xl border border-red-300 bg-red-50 p-6 text-center text-red-600 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400">
+          {error ? (
+            <div className={`rounded-2xl border p-6 text-sm ${theme.card} ${theme.muted}`}>
               {error}
             </div>
-          ) : products.length === 0 ? (
-            <div className={`py-12 text-center ${theme.muted}`}>
-              No products available.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.slice(0, 6).map((product) => (
+          ) : loading ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
+              {[1, 2, 3, 4, 5, 6].map((item) => (
                 <div
-                  key={product._id}
-                  className={`group overflow-hidden rounded-2xl border shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl ${theme.card}`}
+                  key={item}
+                  className={`animate-pulse overflow-hidden rounded-2xl border p-3 sm:p-4 ${theme.card}`}
                 >
-                  <Link
-                    to={`/products/${product._id}`}
-                    className={`flex h-60 items-center justify-center p-8 ${theme.soft}`}
-                  >
-                    <img
-                      src={getProductImage(product.imageUrl)}
-                      alt={product.name}
-                      className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
-                    />
-                  </Link>
-
-                  <div className="p-5">
-                    <p
-                      className={`text-xs font-semibold uppercase tracking-wider ${theme.green}`}
-                    >
-                      {product.category}
-                    </p>
-
-                    <h3 className="mt-2 text-xl font-bold">
-                      {product.name}
-                    </h3>
-
-                    <p
-                      className={`mt-2 line-clamp-2 text-sm leading-6 ${theme.muted}`}
-                    >
-                      {product.description}
-                    </p>
-
-                    <div className="mt-5 flex items-center justify-between gap-4">
-                      <p className="text-xl font-bold">
-                        ₹
-                        {Number(product.price).toLocaleString(
-                          'en-IN',
-                        )}
-                      </p>
-
-                      <Link
-                        to={`/products/${product._id}`}
-                        className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition ${theme.greenButton}`}
-                      >
-                        View Product
-                      </Link>
-                    </div>
-                  </div>
+                  <div className={`h-36 rounded-xl sm:h-52 ${theme.surface}`} />
+                  <div className={`mt-4 h-4 w-3/4 rounded ${theme.surface}`} />
+                  <div className={`mt-3 h-4 w-1/3 rounded ${theme.surface}`} />
                 </div>
               ))}
             </div>
+          ) : featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
+              {featuredProducts.map((product) => {
+                const id = getId(product)
+
+                return (
+                  <article
+                    key={id}
+                    className={`group overflow-hidden rounded-2xl border transition duration-300 hover:-translate-y-1 hover:shadow-xl ${theme.card} ${
+                      darkMode ? 'hover:border-[#D6B887]/40' : 'hover:border-[#047857]/30'
+                    }`}
+                  >
+                    <Link
+                      to={`/products/${id}`}
+                      className={`relative flex h-40 items-center justify-center p-4 sm:h-64 sm:p-7 ${theme.surface}`}
+                    >
+                      <img
+                        src={getImage(product)}
+                        alt={getName(product)}
+                        loading="lazy"
+                        className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+                      />
+                    </Link>
+
+                    <div className="p-3 sm:p-5">
+                      <p className={`truncate text-xs ${theme.muted}`}>
+                        {typeof product.category === 'string'
+                          ? product.category
+                          : getCategoryName(product.category)}
+                      </p>
+
+                      <Link to={`/products/${id}`}>
+                        <h3 className="mt-2 line-clamp-2 min-h-10 text-sm font-semibold sm:text-base">
+                          {getName(product)}
+                        </h3>
+                      </Link>
+
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-base font-semibold sm:text-lg">
+                          ₹{Number(product.price ?? 0).toLocaleString('en-IN')}
+                        </p>
+
+                        <Link
+                          to={`/products/${id}`}
+                          className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-xs font-semibold transition sm:px-4 sm:text-sm ${theme.button}`}
+                        >
+                          View details
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          ) : (
+            <div className={`rounded-2xl border p-8 text-center ${theme.card}`}>
+              <p className={theme.muted}>No products are available right now.</p>
+              <Link to="/products" className={`mt-4 inline-block text-sm font-semibold ${theme.accent}`}>
+                Browse collection →
+              </Link>
+            </div>
           )}
-        </div>
-      </section>
 
-      {/* Why Shop With Us */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-9 text-center">
-            <p
-              className={`text-sm font-semibold uppercase tracking-wider ${theme.green}`}
-            >
-              Our Promise
-            </p>
-
-            <h2 className="mt-2 text-3xl font-bold">
-              Why Shop With Us?
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div
-              className={`rounded-2xl border p-7 text-center shadow-sm ${theme.card}`}
-            >
-              <div
-                className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl ${theme.greenBg}`}
-              >
-                🚚
-              </div>
-
-              <h3 className="mt-5 text-lg font-bold">
-                Fast Delivery
-              </h3>
-
-              <p className={`mt-2 text-sm leading-6 ${theme.muted}`}>
-                Get your products delivered quickly and safely.
-              </p>
-            </div>
-
-            <div
-              className={`rounded-2xl border p-7 text-center shadow-sm ${theme.card}`}
-            >
-              <div
-                className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl ${theme.greenBg}`}
-              >
-                🔒
-              </div>
-
-              <h3 className="mt-5 text-lg font-bold">
-                Secure Shopping
-              </h3>
-
-              <p className={`mt-2 text-sm leading-6 ${theme.muted}`}>
-                Shop confidently with a secure shopping experience.
-              </p>
-            </div>
-
-            <div
-              className={`rounded-2xl border p-7 text-center shadow-sm ${theme.card}`}
-            >
-              <div
-                className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl ${theme.greenBg}`}
-              >
-                💬
-              </div>
-
-              <h3 className="mt-5 text-lg font-bold">
-                Customer Support
-              </h3>
-
-              <p className={`mt-2 text-sm leading-6 ${theme.muted}`}>
-                Get help whenever you need it.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="pb-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div
-            className={`rounded-3xl border px-6 py-12 text-center shadow-xl sm:px-12 ${
-              darkMode
-                ? 'border-[#166534] bg-[#0B3D20]'
-                : 'border-[#15803D] bg-[#15803D]'
-            } text-white`}
+          <Link
+            to="/products"
+            className={`mt-7 inline-block text-sm font-semibold sm:hidden ${theme.accent}`}
           >
-            <h2 className="text-3xl font-bold sm:text-4xl">
-              Ready to find your next product?
-            </h2>
+            View all products →
+          </Link>
+        </div>
+      </section>
 
-            <p className="mx-auto mt-3 max-w-xl text-green-100">
-              Explore our collection and start shopping today.
-            </p>
+      {/* Brand promise */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-9 text-center">
+          <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+            The ShopKart difference
+          </p>
+          <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
+            A little more care in every detail.
+          </h2>
+        </div>
 
-            <Link
-              to="/products"
-              className={`mt-7 inline-block rounded-xl px-7 py-3.5 font-semibold transition ${
-                darkMode
-                  ? 'bg-white text-[#15803D] hover:bg-[#F0FDF4]'
-                  : 'bg-white text-[#15803D] hover:bg-[#F0FDF4]'
-              }`}
-            >
-              Explore Products
-            </Link>
-          </div>
+        <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+          {[
+            {
+              number: '01',
+              title: 'Easy discovery',
+              description: 'Find products and browse categories without the clutter.',
+            },
+            {
+              number: '02',
+              title: 'A simpler journey',
+              description: 'Move from product details to your cart with ease.',
+            },
+            {
+              number: '03',
+              title: 'Your shopping, organised',
+              description: 'Keep your shopping experience together in one place.',
+            },
+          ].map((item) => (
+            <div key={item.number} className={`rounded-2xl border p-6 sm:p-7 ${theme.card}`}>
+              <span className={`text-xs font-semibold tracking-[0.2em] ${theme.accent}`}>
+                {item.number}
+              </span>
+              <h3 className="mt-5 text-lg font-semibold">{item.title}</h3>
+              <p className={`mt-3 text-sm leading-6 ${theme.muted}`}>
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Closing banner */}
+      <section className="px-4 pb-16 sm:px-6 lg:px-8">
+        <div
+          className={`mx-auto max-w-7xl rounded-[2rem] px-6 py-12 text-center sm:px-12 sm:py-16 ${
+            darkMode ? 'bg-[#202720]' : 'bg-[#E8EDE2]'
+          }`}
+        >
+          <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+            Your next find awaits
+          </p>
+
+          <h2 className="mx-auto mt-4 max-w-2xl font-serif text-3xl leading-tight sm:text-5xl">
+            Good things are just a click away.
+          </h2>
+
+          <p className={`mx-auto mt-4 max-w-xl text-sm leading-6 ${theme.muted}`}>
+            Explore the collection and find something that feels just right.
+          </p>
+
+          <Link
+            to="/products"
+            className={`mt-7 inline-flex rounded-full px-7 py-3.5 text-sm font-semibold transition hover:-translate-y-0.5 ${theme.button}`}
+          >
+            Start exploring ↗
+          </Link>
         </div>
       </section>
     </main>
