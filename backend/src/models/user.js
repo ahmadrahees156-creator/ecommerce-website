@@ -1,13 +1,13 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-const userSchema=new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
-    name:{
+    name: {
       type: String,
       required: true,
       trim: true,
     },
-    email:{
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -15,12 +15,22 @@ const userSchema=new mongoose.Schema(
       trim: true,
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please enter a valid email"],
     },
-    passwordHash:{
+    passwordHash: {
       type: String,
       required: true,
       select: false,
     },
-    role:{
+    otp: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    otpExpiresAt: {
+      type: Date,
+      default: null,
+      select: false,
+    },
+    role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
