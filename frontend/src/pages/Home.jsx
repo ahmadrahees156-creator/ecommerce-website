@@ -35,8 +35,17 @@ function Home() {
           productsResponse?.items ??
           []
 
+        const categoryData =
+          categoriesResponse?.data?.categories ??
+          categoriesResponse?.data?.items ??
+          categoriesResponse?.data ??
+          categoriesResponse?.categories ??
+          categoriesResponse?.items ??
+          categoriesResponse ??
+          []
+
         setProducts(Array.isArray(productData) ? productData : [])
-        setCategories(Array.isArray(categoriesResponse) ? categoriesResponse : [])
+        setCategories(Array.isArray(categoryData) ? categoryData : [])
       } catch (err) {
         if (!active) return
 
@@ -86,7 +95,54 @@ function Home() {
   const getCategoryName = (category) =>
     typeof category === 'string'
       ? category
-      : category?.name ?? category?.title ?? category?.categoryName ?? 'Category'
+      : category?.name ??
+        category?.title ??
+        category?.categoryName ??
+        'Category'
+
+  const getCategoryImage = (category, index) => {
+    const name = getCategoryName(category).toLowerCase()
+
+    if (name.includes('electronic') || name.includes('gadget')) {
+      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'
+    }
+
+    if (
+      name.includes('fashion') ||
+      name.includes('cloth') ||
+      name.includes('men') ||
+      name.includes('women') ||
+      name.includes('apparel')
+    ) {
+      return 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80'
+    }
+
+    if (
+      name.includes('home') ||
+      name.includes('living') ||
+      name.includes('decor') ||
+      name.includes('furniture')
+    ) {
+      return 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80'
+    }
+
+    if (
+      name.includes('accessor') ||
+      name.includes('watch') ||
+      name.includes('jewel')
+    ) {
+      return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80'
+    }
+
+    const fallbackImages = [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+    ]
+
+    return fallbackImages[index % fallbackImages.length]
+  }
 
   const featuredProducts = products.slice(0, 6)
 
@@ -99,113 +155,51 @@ function Home() {
             darkMode ? 'bg-[#181B19]' : 'bg-[#E8EDE2]'
           } lg:grid-cols-2`}
         >
+          {/* Left content */}
           <div className="relative z-10 flex flex-col justify-center p-7 sm:p-12 lg:p-16">
             <p
               className={`mb-5 text-xs font-semibold uppercase tracking-[0.25em] ${theme.accent}`}
             >
-              Discover something special
+              ShopKart · Better choices, brighter days
             </p>
 
-            <h1 className="max-w-xl font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">
-              Everyday essentials.
+            <h1 className="max-w-xl font-serif text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
+              Find your next
               <span className={`mt-1 block ${theme.accent}`}>
-                Exceptional finds.
+                everyday favourite.
               </span>
             </h1>
 
-            <p className={`mt-6 max-w-lg text-base leading-7 sm:text-lg ${theme.muted}`}>
-              Find products you'll love, explore new favourites and enjoy a
-              simpler way to shop with ShopKart.
+            <p
+              className={`mt-6 max-w-lg text-base leading-7 sm:text-lg ${theme.muted}`}
+            >
+              Thoughtfully selected products for your everyday life. Discover
+              something worth bringing home.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/products"
-                className={`rounded-full px-7 py-3.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${theme.button}`}
+                className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${theme.button}`}
               >
-                Explore collection <span aria-hidden="true">↗</span>
+                Explore Collection <span aria-hidden="true">→</span>
               </Link>
-
-              <Link
-                to="/products"
-                className={`rounded-full border px-7 py-3.5 text-sm font-semibold transition ${
-                  darkMode
-                    ? 'border-[#555B55] hover:border-[#D6B887]'
-                    : 'border-[#C6D0C2] hover:border-[#047857]'
-                }`}
-              >
-                Browse products
-              </Link>
-            </div>
-
-            <div className={`mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm ${theme.muted}`}>
-              <span>✓ Curated collection</span>
-              <span>✓ Easy browsing</span>
-              <span>✓ Simple checkout</span>
             </div>
           </div>
 
-          <div className={`relative flex min-h-[330px] items-center justify-center p-6 sm:min-h-[430px] sm:p-10 lg:min-h-[570px] ${theme.surface}`}>
-            <div
-              className={`absolute h-64 w-64 rounded-full border sm:h-80 sm:w-80 ${
-                darkMode ? 'border-[#D6B887]/20' : 'border-[#064E3B]/15'
-              }`}
-            />
-            <div
-              className={`absolute h-48 w-48 rounded-full sm:h-60 sm:w-60 ${
-                darkMode ? 'bg-[#D6B887]/5' : 'bg-[#064E3B]/5'
-              }`}
-            />
-
-            {loading ? (
-              <div className={`relative z-10 text-sm ${theme.muted}`}>
-                Discovering products...
-              </div>
-            ) : featuredProducts.length > 0 ? (
-              <Link
-                to={`/products/${getId(featuredProducts[0])}`}
-                className={`relative z-10 w-full max-w-sm rounded-3xl border p-5 shadow-xl transition duration-300 hover:-translate-y-1 ${theme.card}`}
-              >
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <span className={`text-xs font-semibold uppercase tracking-[0.18em] ${theme.accent}`}>
-                    Featured find
-                  </span>
-                  <span className={`text-xs ${theme.muted}`}>01 / 06</span>
-                </div>
-
-                <div className={`flex h-64 items-center justify-center rounded-2xl p-5 sm:h-72 ${theme.surface}`}>
-                  <img
-                    src={getImage(featuredProducts[0])}
-                    alt={getName(featuredProducts[0])}
-                    className="h-full w-full object-contain transition duration-300 hover:scale-105"
-                  />
-                </div>
-
-                <div className="mt-5 flex items-end justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className={`text-xs ${theme.muted}`}>A favourite to explore</p>
-                    <h2 className="mt-1 truncate text-lg font-semibold">
-                      {getName(featuredProducts[0])}
-                    </h2>
-                  </div>
-
-                  <span className={`shrink-0 text-lg font-semibold ${theme.accent}`}>
-                    ₹{Number(featuredProducts[0].price ?? 0).toLocaleString('en-IN')}
-                  </span>
-                </div>
-              </Link>
-            ) : (
-              <div className={`relative z-10 max-w-xs text-center ${theme.muted}`}>
-                Your next favourite find is waiting to be discovered.
-                <Link to="/products" className={`mt-4 block font-semibold ${theme.accent}`}>
-                  Browse products →
-                </Link>
-              </div>
-            )}
-
-            <span className={`absolute bottom-5 right-5 text-xs tracking-widest ${theme.muted}`}>
-              SHOPKART · YOUR EVERYDAY EDIT
-            </span>
+          {/* Right-side homepage image - circle removed */}
+          <div
+            className={`relative flex min-h-[300px] items-center justify-center overflow-hidden p-5 sm:min-h-[420px] sm:p-8 lg:min-h-[520px] ${
+              darkMode ? 'bg-[#202720]' : 'bg-[#E8EDE2]'
+            }`}
+          >
+            <div className="relative z-10 flex w-full max-w-[540px] items-center justify-center">
+              <img
+                src="/homepage.png"
+                alt="ShopKart everyday essentials collection"
+                className="h-auto max-h-[440px] w-full object-contain transition-transform duration-500 hover:scale-[1.03]"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -214,7 +208,9 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
+            >
               Find your style
             </p>
             <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
@@ -234,46 +230,72 @@ function Home() {
         </div>
 
         {categories.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
             {categories.slice(0, 8).map((category, index) => {
               const name = getCategoryName(category)
+              const image = getCategoryImage(category, index)
 
               return (
                 <Link
                   key={category?._id ?? category?.id ?? name}
                   to={`/products?category=${encodeURIComponent(name)}`}
-                  className={`group rounded-2xl border p-4 transition duration-300 hover:-translate-y-1 sm:p-6 ${theme.card} ${
-                    darkMode ? 'hover:border-[#D6B887]/60' : 'hover:border-[#047857]/50'
+                  className={`group overflow-hidden rounded-2xl border transition duration-300 hover:-translate-y-1 hover:shadow-xl ${theme.card} ${
+                    darkMode
+                      ? 'hover:border-[#D6B887]/60'
+                      : 'hover:border-[#047857]/50'
                   }`}
                 >
-                  <span className={`text-xs tracking-widest ${theme.muted}`}>
-                    0{index + 1}
-                  </span>
+                  <div
+                    className={`relative h-36 overflow-hidden sm:h-48 ${theme.surface}`}
+                  >
+                    <img
+                      src={image}
+                      alt={name}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                    />
 
-                  <h3 className="mt-5 break-words text-base font-semibold sm:text-lg">
-                    {name}
-                  </h3>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
 
-                  <span className={`mt-3 inline-block text-sm transition group-hover:translate-x-1 ${theme.accent}`}>
-                    Explore →
-                  </span>
+                    <span className="absolute bottom-3 left-3 rounded-full bg-black/35 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                      Explore →
+                    </span>
+                  </div>
+
+                  <div className="p-3 sm:p-5">
+                    <span className={`text-xs tracking-widest ${theme.muted}`}>
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+
+                    <h3 className="mt-2 break-words text-base font-semibold transition group-hover:translate-x-1 sm:text-lg">
+                      {name}
+                    </h3>
+                  </div>
                 </Link>
               )
             })}
           </div>
         ) : (
-          <p className={`rounded-2xl border p-6 text-sm ${theme.border} ${theme.muted}`}>
+          <p
+            className={`rounded-2xl border p-6 text-sm ${theme.border} ${theme.muted}`}
+          >
             Categories will appear here when available.
           </p>
         )}
       </section>
 
       {/* Products */}
-      <section className={`border-y py-14 sm:py-16 ${theme.border} ${darkMode ? 'bg-[#151515]' : 'bg-[#F1F0E8]'}`}>
+      <section
+        className={`border-y py-14 sm:py-16 ${theme.border} ${
+          darkMode ? 'bg-[#151515]' : 'bg-[#F1F0E8]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+              <p
+                className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
+              >
                 The latest edit
               </p>
               <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
@@ -318,7 +340,9 @@ function Home() {
                   <article
                     key={id}
                     className={`group overflow-hidden rounded-2xl border transition duration-300 hover:-translate-y-1 hover:shadow-xl ${theme.card} ${
-                      darkMode ? 'hover:border-[#D6B887]/40' : 'hover:border-[#047857]/30'
+                      darkMode
+                        ? 'hover:border-[#D6B887]/40'
+                        : 'hover:border-[#047857]/30'
                     }`}
                   >
                     <Link
@@ -366,7 +390,10 @@ function Home() {
           ) : (
             <div className={`rounded-2xl border p-8 text-center ${theme.card}`}>
               <p className={theme.muted}>No products are available right now.</p>
-              <Link to="/products" className={`mt-4 inline-block text-sm font-semibold ${theme.accent}`}>
+              <Link
+                to="/products"
+                className={`mt-4 inline-block text-sm font-semibold ${theme.accent}`}
+              >
                 Browse collection →
               </Link>
             </div>
@@ -384,7 +411,9 @@ function Home() {
       {/* Brand promise */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-9 text-center">
-          <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+          <p
+            className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
+          >
             The ShopKart difference
           </p>
           <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
@@ -397,21 +426,29 @@ function Home() {
             {
               number: '01',
               title: 'Easy discovery',
-              description: 'Find products and browse categories without the clutter.',
+              description:
+                'Find products and browse categories without the clutter.',
             },
             {
               number: '02',
               title: 'A simpler journey',
-              description: 'Move from product details to your cart with ease.',
+              description:
+                'Move from product details to your cart with ease.',
             },
             {
               number: '03',
               title: 'Your shopping, organised',
-              description: 'Keep your shopping experience together in one place.',
+              description:
+                'Keep your shopping experience together in one place.',
             },
           ].map((item) => (
-            <div key={item.number} className={`rounded-2xl border p-6 sm:p-7 ${theme.card}`}>
-              <span className={`text-xs font-semibold tracking-[0.2em] ${theme.accent}`}>
+            <div
+              key={item.number}
+              className={`rounded-2xl border p-6 sm:p-7 ${theme.card}`}
+            >
+              <span
+                className={`text-xs font-semibold tracking-[0.2em] ${theme.accent}`}
+              >
                 {item.number}
               </span>
               <h3 className="mt-5 text-lg font-semibold">{item.title}</h3>
@@ -430,7 +467,9 @@ function Home() {
             darkMode ? 'bg-[#202720]' : 'bg-[#E8EDE2]'
           }`}
         >
-          <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
+          <p
+            className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
+          >
             Your next find awaits
           </p>
 
