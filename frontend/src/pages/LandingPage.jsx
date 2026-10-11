@@ -17,7 +17,7 @@ const categories = [
     title: 'Everyday,',
     secondLine: 'reimagined.',
     label: 'LIFESTYLE',
-    symbol: '✳',
+    symbol: '🛍️',
     bg: 'bg-[#E9E1D3]',
     image:
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85',
@@ -79,7 +79,7 @@ function LandingPage() {
                 <span className="flex items-center gap-3">
                   <span>ICON.</span>
                   <span className="mt-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#DCEDE1] text-xl tracking-normal sm:h-16 sm:w-16 sm:text-3xl">
-                    ✳
+                    🛍️
                   </span>
                 </span>
               </h1>
@@ -187,11 +187,11 @@ function LandingPage() {
               className="flex items-center gap-8 text-xs font-black uppercase tracking-[0.2em] sm:text-sm"
             >
               GOOD FINDS ONLY
-              <span className="text-[#B7D9C2]">✳</span>
+              <span className="text-[#B7D9C2]">🛒</span>
               DISCOVER YOUR NEXT FAVOURITE
-              <span className="text-[#B7D9C2]">✳</span>
+              <span className="text-[#B7D9C2]">🛍️</span>
               SHOP DIFFERENT
-              <span className="text-[#B7D9C2]">✳</span>
+              <span className="text-[#B7D9C2]">🛒</span>
             </p>
           ))}
         </div>

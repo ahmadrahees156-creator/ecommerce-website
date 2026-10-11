@@ -122,7 +122,7 @@ function About() {
                 </span>
 
                 <span className={`text-xl ${accent}`} aria-hidden="true">
-                  ✳
+                  🎲
                 </span>
               </div>
 
