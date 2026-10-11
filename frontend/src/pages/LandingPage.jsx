@@ -128,7 +128,7 @@ function LandingPage() {
                 </div>
 
                 <div className="col-span-2 flex flex-col justify-between rounded-[1.5rem] bg-[#064E3B] p-4 text-white sm:p-5">
-                  <span className="text-xl">✳</span>
+                  <span className="text-xl">🛒</span>
                   <div>
                     <p className="text-[9px] uppercase tracking-[0.2em] text-white/60">
                       Curated for you
