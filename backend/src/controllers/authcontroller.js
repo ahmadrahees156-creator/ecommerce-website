@@ -31,7 +31,7 @@ function generateOtp() {
 
 async function sendOtp(req, res, next) {
   try {
-    const { email } = req.body || {};
+    const { email, name, password } = req.body || {};
 
     if (typeof email !== "string" || !email.trim()) {
       return res.status(400).json({
@@ -41,12 +41,28 @@ async function sendOtp(req, res, next) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const user = await User.findOne({ email: normalizedEmail });
+    let user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "No account found for this email",
+      if (
+        typeof name !== "string" ||
+        !name.trim() ||
+        typeof password !== "string" ||
+        !password.trim() ||
+        password.length < 8
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Name and password (minimum 8 characters) are required to create a new account",
+        });
+      }
+
+      const passwordHash = await bcrypt.hash(password, 12);
+      user = await User.create({
+        name: name.trim(),
+        email: normalizedEmail,
+        passwordHash,
       });
     }
 
@@ -59,8 +75,16 @@ async function sendOtp(req, res, next) {
     res.status(200).json({
       success: true,
       message: "OTP sent successfully",
+      requiresOtpVerification: true,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Email is already registered",
+      });
+    }
+
     next(error);
   }
 }
@@ -152,16 +176,24 @@ async function register(req, res, next) {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
     const passwordHash = await bcrypt.hash(password, 12);
     const user = await User.create({
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
       passwordHash,
     });
 
+    const otp = generateOtp();
+    user.otp = await bcrypt.hash(otp, 10);
+    user.otpExpiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
+    await sendOtpEmail(normalizedEmail, otp);
+    await user.save();
+
     res.status(201).json({
       success: true,
-      token: createToken(user),
+      requiresOtpVerification: true,
+      message: "OTP sent successfully. Verify it to complete registration.",
       user: safeUser(user),
     });
   } catch (error) {
