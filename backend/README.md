@@ -11,10 +11,11 @@ The API supports standard email/password login as well as OTP-based sign-in.
 - POST /api/auth/register
   - Body: { "name": "Jane Doe", "email": "user@example.com", "password": "secret123" }
   - Creates the user account, sends a six-digit OTP to the email, and waits for verification before completing registration.
+  - If email delivery fails, retry with the same email and password to request a fresh OTP.
 
 - POST /api/auth/send-otp
   - Body: { "email": "user@example.com" }
-  - Sends a six-digit OTP to the account email address, or creates a temporary user account if the email is not yet registered and includes a name + password.
+  - Resends a six-digit OTP to an existing account, or creates a user account if the email is not yet registered and includes a name + password.
   - The code expires after five minutes.
 
 - POST /api/auth/verify-otp
