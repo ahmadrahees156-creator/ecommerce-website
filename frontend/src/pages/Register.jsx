@@ -93,6 +93,28 @@ function Register() {
     }
   };
 
+  const handleResendOtp = async () => {
+    setError('');
+    setNotice('');
+
+    try {
+      setLoading(true);
+      await api.post('/auth/send-otp', {
+        email: formData.email.trim().toLowerCase(),
+      });
+      setOtp('');
+      setNotice('A new verification code was requested. Check your email.');
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          'Could not resend the verification code. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError('');
@@ -408,6 +430,16 @@ function Register() {
                 <p className={`mt-2 text-xs ${mutedText}`}>
                   Enter the verification code sent to your email.
                 </p>
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={loading}
+                  className={`mt-3 text-sm font-semibold underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+                    darkMode ? 'text-[#D6B887]' : 'text-[#047857]'
+                  }`}
+                >
+                  {loading ? 'Sending...' : 'Didn’t receive the code? Resend'}
+                </button>
               </div>
 
               <button
