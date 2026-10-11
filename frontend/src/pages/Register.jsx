@@ -41,18 +41,19 @@ function Register() {
 
     const name = formData.name.trim();
     const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
 
-    if (!name || !email || !formData.password || !formData.confirmPassword) {
+    if (!name || !email || !password || !formData.confirmPassword) {
       setError('Please fill in all fields.');
       return;
     }
 
-    if (formData.password.length < 8) {
+    if (password.length < 8) {
       setError('Password must contain at least 8 characters.');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (password !== formData.confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
@@ -60,16 +61,24 @@ function Register() {
     try {
       setLoading(true);
 
-      // Requires a registration-specific backend endpoint.
-      const response = await api.post('/auth/register/send-otp', {
+      // Register the user and let the backend send the OTP.
+      const response = await api.post('/auth/register', {
         name,
         email,
-        password: formData.password,
+        password,
       });
 
-      if (response.data?.success === false) {
-        throw new Error(response.data.message || 'Could not send OTP.');
+      const data = response.data;
+
+      if (data?.success === false) {
+        throw new Error(data.message || 'Could not register.');
       }
+
+      setFormData((prev) => ({
+        ...prev,
+        name,
+        email,
+      }));
 
       setOtpSent(true);
       setNotice('Verification code sent. Check your email.');
@@ -77,7 +86,7 @@ function Register() {
       setError(
         err.response?.data?.message ||
           err.message ||
-          'Could not send OTP. Please try again.'
+          'Could not register. Please try again.'
       );
     } finally {
       setLoading(false);
@@ -89,7 +98,10 @@ function Register() {
     setError('');
     setNotice('');
 
-    if (!/^\d{6}$/.test(otp.trim())) {
+    const email = formData.email.trim().toLowerCase();
+    const verificationCode = otp.trim();
+
+    if (!/^\d{6}$/.test(verificationCode)) {
       setError('Enter the 6-digit verification code.');
       return;
     }
@@ -97,23 +109,24 @@ function Register() {
     try {
       setLoading(true);
 
-      // Backend should verify OTP, create the new account,
-      // and return { success: true, token, user }.
-      const response = await api.post('/auth/register/verify-otp', {
-        email: formData.email.trim().toLowerCase(),
-        otp: otp.trim(),
+      // Verify the OTP using the backend's actual route.
+      const response = await api.post('/auth/verify-otp', {
+        email,
+        otp: verificationCode,
       });
 
       const data = response.data;
       const token = data?.token ?? data?.data?.token;
       const user = data?.user ?? data?.data?.user;
 
-      if (!data?.success || !token || !user) {
+      if (data?.success === false || !token || !user) {
         throw new Error(
-          data?.message || 'OTP verification response was incomplete.'
+          data?.message ||
+            'OTP verification response was incomplete. Please check the backend response.'
         );
       }
 
+      // AuthContext should store the token and user.
       login(token, user);
       navigate('/home', { replace: true });
     } catch (err) {
@@ -146,7 +159,9 @@ function Register() {
     : 'bg-[#064E3B] text-white hover:bg-[#047857]';
 
   return (
-    <main className={`min-h-screen ${pageBg} px-4 py-12 sm:py-16 transition-colors duration-300`}>
+    <main
+      className={`min-h-screen ${pageBg} px-4 py-12 sm:py-16 transition-colors duration-300`}
+    >
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-3xl border border-transparent shadow-xl lg:grid-cols-2">
         <section
           className={`relative hidden min-h-[650px] flex-col justify-between overflow-hidden p-10 lg:flex ${
@@ -166,11 +181,16 @@ function Register() {
           />
 
           <Link to="/" className="relative z-10 text-2xl font-bold tracking-tight">
-            Shop<span className={darkMode ? 'text-[#D6B887]' : 'text-[#047857]'}>Kart</span>
+            Shop
+            <span className={darkMode ? 'text-[#D6B887]' : 'text-[#047857]'}>
+              Kart
+            </span>
           </Link>
 
           <div className="relative z-10 max-w-sm">
-            <p className={`mb-4 text-xs font-semibold uppercase tracking-[0.25em] ${mutedText}`}>
+            <p
+              className={`mb-4 text-xs font-semibold uppercase tracking-[0.25em] ${mutedText}`}
+            >
               A better way to shop
             </p>
 
@@ -185,22 +205,32 @@ function Register() {
             </h1>
 
             <p className={`mt-6 max-w-xs text-sm leading-7 ${mutedText}`}>
-              Create your account to discover products, save your favourites and keep your shopping organised.
+              Create your account to discover products, save your favourites
+              and keep your shopping organised.
             </p>
           </div>
 
-          <div className={`relative z-10 border-t pt-5 text-xs ${darkMode ? 'border-[#414141]' : 'border-[#CFD9CC'} ${mutedText}`}>
+          <div
+            className={`relative z-10 border-t pt-5 text-xs ${
+              darkMode ? 'border-[#414141]' : 'border-[#CFD9CC]'
+            } ${mutedText}`}
+          >
             Thoughtful finds. A simpler shopping experience.
           </div>
         </section>
 
         <section className={`border p-6 sm:p-10 lg:p-12 ${cardBg}`}>
           <Link to="/" className="mb-8 inline-block text-xl font-bold lg:hidden">
-            Shop<span className={darkMode ? 'text-[#D6B887]' : 'text-[#047857]'}>Kart</span>
+            Shop
+            <span className={darkMode ? 'text-[#D6B887]' : 'text-[#047857]'}>
+              Kart
+            </span>
           </Link>
 
           <div className="mb-8">
-            <p className={`mb-3 text-xs font-semibold uppercase tracking-[0.2em] ${mutedText}`}>
+            <p
+              className={`mb-3 text-xs font-semibold uppercase tracking-[0.2em] ${mutedText}`}
+            >
               {otpSent ? 'Email verification' : 'Create your account'}
             </p>
 
@@ -313,7 +343,10 @@ function Register() {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium">
+                <label
+                  htmlFor="confirmPassword"
+                  className="mb-2 block text-sm font-medium"
+                >
                   Confirm password
                 </label>
 
@@ -373,7 +406,7 @@ function Register() {
                 />
 
                 <p className={`mt-2 text-xs ${mutedText}`}>
-                  The backend should expire verification codes after 5 minutes.
+                  Enter the verification code sent to your email.
                 </p>
               </div>
 
