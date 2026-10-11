@@ -6,11 +6,16 @@ Node.js and Express API for the e-commerce website.
 
 The API supports standard email/password login as well as OTP-based sign-in.
 
-### OTP endpoints
+### OTP registration flow
+
+- POST /api/auth/register
+  - Body: { "name": "Jane Doe", "email": "user@example.com", "password": "secret123" }
+  - Creates the user account, sends a six-digit OTP to the email, and waits for verification before completing registration.
 
 - POST /api/auth/send-otp
   - Body: { "email": "user@example.com" }
-  - Sends a six-digit OTP to the account email address. The code expires after five minutes.
+  - Sends a six-digit OTP to the account email address, or creates a temporary user account if the email is not yet registered and includes a name + password.
+  - The code expires after five minutes.
 
 - POST /api/auth/verify-otp
   - Body: { "email": "user@example.com", "otp": "123456" }
