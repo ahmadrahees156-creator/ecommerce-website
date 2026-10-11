@@ -17,13 +17,23 @@ async function sendOtpEmail(to, otp) {
     },
   });
 
-  await transporter.sendMail({
+  const result = await transporter.sendMail({
     from: GMAIL_USER,
     to,
     subject: "Your verification code",
     text: `Your verification code is ${otp}. It expires in 5 minutes.`,
     html: `<p>Your verification code is <strong>${otp}</strong>.</p><p>It expires in 5 minutes.</p>`,
   });
+
+  const accepted = result.accepted.some((recipient) => {
+    const address =
+      typeof recipient === "string" ? recipient : recipient.address;
+    return address.toLowerCase() === to.toLowerCase();
+  });
+
+  if (!accepted) {
+    throw new Error("The email provider did not accept the OTP recipient");
+  }
 }
 
 module.exports = { sendOtpEmail };

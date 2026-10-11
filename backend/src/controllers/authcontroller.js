@@ -29,6 +29,14 @@ function generateOtp() {
   return randomInt(100000, 1000000).toString();
 }
 
+async function issueOtp(user) {
+  const otp = generateOtp();
+  user.otp = await bcrypt.hash(otp, 10);
+  user.otpExpiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
+  await user.save();
+  await sendOtpEmail(user.email, otp);
+}
+
 async function sendOtp(req, res, next) {
   try {
     const { email, name, password } = req.body || {};
@@ -66,11 +74,7 @@ async function sendOtp(req, res, next) {
       });
     }
 
-    const otp = generateOtp();
-    user.otp = await bcrypt.hash(otp, 10);
-    user.otpExpiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
-    await sendOtpEmail(normalizedEmail, otp);
-    await user.save();
+    await issueOtp(user);
 
     res.status(200).json({
       success: true,
@@ -177,23 +181,37 @@ async function register(req, res, next) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const passwordHash = await bcrypt.hash(password, 12);
-    const user = await User.create({
-      name: name.trim(),
-      email: normalizedEmail,
-      passwordHash,
-    });
+    let user = await User.findOne({ email: normalizedEmail }).select(
+      "+passwordHash"
+    );
+    const isExistingUser = Boolean(user);
 
-    const otp = generateOtp();
-    user.otp = await bcrypt.hash(otp, 10);
-    user.otpExpiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
-    await sendOtpEmail(normalizedEmail, otp);
-    await user.save();
+    if (user) {
+      const passwordMatches = await bcrypt.compare(password, user.passwordHash);
 
-    res.status(201).json({
+      if (!passwordMatches) {
+        return res.status(409).json({
+          success: false,
+          message: "Email is already registered",
+        });
+      }
+    } else {
+      const passwordHash = await bcrypt.hash(password, 12);
+      user = await User.create({
+        name: name.trim(),
+        email: normalizedEmail,
+        passwordHash,
+      });
+    }
+
+    await issueOtp(user);
+
+    res.status(isExistingUser ? 200 : 201).json({
       success: true,
       requiresOtpVerification: true,
-      message: "OTP sent successfully. Verify it to complete registration.",
+      message: isExistingUser
+        ? "A new OTP was sent. Verify it to continue."
+        : "OTP sent successfully. Verify it to complete registration.",
       user: safeUser(user),
     });
   } catch (error) {
