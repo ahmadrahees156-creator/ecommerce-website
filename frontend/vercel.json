@@ -1,8 +1,9 @@
+
 {
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://ecommerce-website-1-ovnv.onrender.com/api/:path*"
+      "destination": "https://ecommerce-website-5-wn0y.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
