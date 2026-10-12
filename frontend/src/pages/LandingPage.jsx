@@ -7,30 +7,27 @@ const categories = [
     title: 'Tech that',
     secondLine: 'moves you.',
     label: 'TECHNOLOGY',
-    symbol: '⌘',
-    bg: 'bg-[#DCEDE1]',
     image:
       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=85',
+    bg: 'bg-[#DCEDE1]',
   },
   {
     number: '02',
     title: 'Everyday,',
     secondLine: 'reimagined.',
     label: 'LIFESTYLE',
-    symbol: '🛍️',
-    bg: 'bg-[#E9E1D3]',
     image:
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85',
+    bg: 'bg-[#E9E1D3]',
   },
   {
     number: '03',
     title: 'Wear your',
     secondLine: 'own story.',
     label: 'STYLE',
-    symbol: '✦',
-    bg: 'bg-[#E5E1F0]',
     image:
       'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85',
+    bg: 'bg-[#E5E1F0]',
   },
 ];
 
@@ -38,7 +35,7 @@ function LandingPage() {
   return (
     <main className="overflow-hidden bg-[#F8F5EC] text-[#0B211B]">
 
-      {/* EDITORIAL HERO */}
+      {/* HERO SECTION */}
       <section className="px-5 pb-16 pt-8 sm:px-8 md:px-12 md:pb-24 lg:px-20">
         <div className="mx-auto max-w-[1440px]">
 
@@ -58,7 +55,6 @@ function LandingPage() {
 
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-5">
 
-            {/* LEFT TYPOGRAPHY */}
             <div className="relative z-10 lg:col-span-7">
               <div className="mb-7 flex items-center gap-3">
                 <span className="h-px w-10 bg-[#047857]" />
@@ -91,16 +87,16 @@ function LandingPage() {
                   actually live.
                 </p>
 
-                <div className="flex flex-wrap gap-3 sm:justify-start">
-                  <Link
-                    to="/products"
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="#collections"
                     className="group inline-flex items-center gap-4 rounded-full bg-[#064E3B] px-6 py-4 text-xs font-bold uppercase tracking-wider text-white transition duration-300 hover:bg-[#047857]"
                   >
                     Explore collection
                     <span className="transition-transform group-hover:translate-x-1">
                       ↗
                     </span>
-                  </Link>
+                  </a>
 
                   <Link
                     to="/home"
@@ -112,13 +108,10 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* RIGHT ART DIRECTION */}
             <div className="relative mx-auto w-full max-w-lg lg:col-span-5 lg:ml-auto lg:max-w-none">
-
               <div className="absolute -right-4 top-0 h-28 w-28 rounded-full bg-[#DCEDE1] sm:-right-7 sm:h-40 sm:w-40" />
 
               <div className="relative z-10 grid grid-cols-5 grid-rows-[100px_140px_125px] gap-2 sm:grid-rows-[130px_190px_160px]">
-
                 <div className="col-span-3 row-span-2 overflow-hidden rounded-t-[100px] rounded-b-[1.5rem] bg-[#DCEDE1]">
                   <img
                     src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85"
@@ -197,8 +190,11 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* BENTO DISCOVERY SECTION */}
-      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-20">
+      {/* COLLECTIONS SECTION */}
+      <section
+        id="collections"
+        className="scroll-mt-24 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-20"
+      >
         <div className="mx-auto max-w-[1440px]">
 
           <div className="mb-10 grid gap-6 md:grid-cols-2 md:items-end">
@@ -219,8 +215,8 @@ function LandingPage() {
             <div className="flex flex-col gap-5 md:items-end">
               <p className="max-w-sm text-sm leading-7 text-[#52635A] md:text-right">
                 From little everyday upgrades to things you never
-                knew you needed. Find your next favourite in
-                our curated collections.
+                knew you needed. Find your next favourite in our
+                curated collections.
               </p>
 
               <Link
@@ -237,7 +233,6 @@ function LandingPage() {
 
           <div className="grid gap-4 md:grid-cols-12">
 
-            {/* LARGE FEATURE */}
             <Link
               to="/products"
               className="group relative min-h-[360px] overflow-hidden rounded-[2rem] bg-[#DCEDE1] p-6 sm:min-h-[440px] sm:p-9 md:col-span-7"
@@ -255,7 +250,6 @@ function LandingPage() {
                   <span className="rounded-full border border-white/40 bg-black/10 px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] backdrop-blur">
                     THE TECH EDIT
                   </span>
-
                   <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F8F5EC] text-xl text-[#064E3B] transition duration-300 group-hover:rotate-45">
                     ↗
                   </span>
@@ -277,7 +271,6 @@ function LandingPage() {
               </div>
             </Link>
 
-            {/* STACKED CARDS */}
             <div className="grid gap-4 sm:grid-cols-2 md:col-span-5 md:grid-cols-1">
 
               <Link
@@ -333,90 +326,99 @@ function LandingPage() {
                   </p>
                 </div>
               </Link>
+
             </div>
           </div>
         </div>
       </section>
 
-      {/* ASYMMETRIC CATEGORY EDIT */}
-      <section className="bg-[#EDE8DC] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-20">
+      {/* OUR STORY SECTION */}
+      <section
+        id="story"
+        className="scroll-mt-24 bg-[#EDE8DC] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-20"
+      >
         <div className="mx-auto max-w-[1440px]">
 
-          <div className="mb-12 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="grid items-center gap-12 md:grid-cols-2">
+
             <div>
-              <p className="mb-4 text-[10px] font-black uppercase tracking-[0.25em] text-[#047857]">
-                02 / EXPLORE BY MOOD
+              <p className="mb-5 text-[10px] font-black uppercase tracking-[0.25em] text-[#047857]">
+                02 / OUR STORY
               </p>
-              <h2 className="text-4xl font-black leading-[0.95] tracking-[-0.06em] sm:text-6xl">
-                YOUR WORLD.
+
+              <h2 className="text-5xl font-black leading-[0.9] tracking-[-0.07em] sm:text-7xl">
+                MORE THAN
+                <br />
+                JUST
                 <br />
                 <span className="font-serif font-normal italic text-[#047857]">
-                  Your choices.
+                  shopping.
                 </span>
               </h2>
             </div>
 
-            <p className="max-w-xs text-sm leading-7 text-[#52635A]">
-              Three different moods. Endless possibilities.
-              Find the things that feel like you.
-            </p>
-          </div>
+            <div>
+              <p className="text-lg leading-8 text-[#52635A]">
+                We believe the little things can make everyday life
+                feel extraordinary. ShopKart brings together useful
+                finds, thoughtful design and styles that fit your
+                world.
+              </p>
 
-          <div className="grid gap-5 md:grid-cols-3">
-            {categories.map((category) => (
+              <p className="mt-5 text-sm leading-7 text-[#52635A]">
+                From technology that keeps you connected to everyday
+                essentials that express your personality, our goal is
+                simple: help you discover something you'll love.
+              </p>
+
               <Link
-                to="/products"
-                key={category.number}
-                className={`${category.bg} group relative flex min-h-[350px] flex-col justify-between overflow-hidden rounded-[2rem] p-6 transition duration-300 hover:-translate-y-2 sm:min-h-[420px] sm:p-8`}
+                to="/about"
+                className="group mt-7 inline-flex items-center gap-3 rounded-full bg-[#064E3B] px-6 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[#047857]"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black tracking-[0.2em]">
-                    {category.number} / {category.label}
-                  </span>
-
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/60 transition duration-300 group-hover:rotate-45 group-hover:bg-[#064E3B] group-hover:text-white">
-                    ↗
-                  </span>
-                </div>
-
-                <div className="relative mt-8 flex flex-1 items-center justify-center py-5">
-                  <div className="absolute h-48 w-48 rounded-full bg-white/50 transition duration-500 group-hover:scale-110 sm:h-56 sm:w-56" />
-
-                  <img
-                    src={category.image}
-                    alt={category.label}
-                    loading="lazy"
-                    className="relative z-10 h-48 w-full rounded-2xl object-cover shadow-xl transition duration-500 group-hover:rotate-2 group-hover:scale-105 sm:h-56"
-                  />
-
-                  <span className="absolute -bottom-1 right-0 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-[#064E3B] text-2xl text-white shadow-lg">
-                    {category.symbol}
-                  </span>
-                </div>
-
-                <div className="mt-8 flex items-end justify-between gap-3">
-                  <h3 className="text-2xl font-black leading-tight tracking-[-0.04em] sm:text-3xl">
-                    {category.title}
-                    <br />
-                    <span className="font-serif font-normal italic">
-                      {category.secondLine}
-                    </span>
-                  </h3>
-
-                  <span className="pb-1 text-xs font-bold uppercase tracking-wider">
-                    Explore
-                  </span>
-                </div>
+                Discover our story
+                <span className="transition-transform group-hover:translate-x-1">
+                  ↗
+                </span>
               </Link>
-            ))}
+            </div>
+
           </div>
+
+          <div className="mt-14 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl bg-[#F8F5EC] p-6">
+              <span className="text-2xl">✦</span>
+              <h3 className="mt-5 text-lg font-black">Thoughtful finds</h3>
+              <p className="mt-2 text-sm leading-6 text-[#52635A]">
+                Discover products selected for everyday living.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-[#F8F5EC] p-6">
+              <span className="text-2xl">♡</span>
+              <h3 className="mt-5 text-lg font-black">Your own style</h3>
+              <p className="mt-2 text-sm leading-6 text-[#52635A]">
+                Find things that match your taste and personality.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-[#F8F5EC] p-6">
+              <span className="text-2xl">↗</span>
+              <h3 className="mt-5 text-lg font-black">Everyday discovery</h3>
+              <p className="mt-2 text-sm leading-6 text-[#52635A]">
+                Make room for useful things and unexpected favourites.
+              </p>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* CLOSING STATEMENT */}
+      {/* CLOSING CTA */}
       <section className="px-5 py-24 sm:px-8 md:px-12 md:py-36 lg:px-20">
         <div className="mx-auto max-w-[1440px]">
+
           <div className="grid items-end gap-8 md:grid-cols-12">
+
             <div className="md:col-span-8">
               <p className="mb-5 text-[10px] font-black uppercase tracking-[0.25em] text-[#047857]">
                 03 / YOUR NEXT CHAPTER
@@ -451,15 +453,18 @@ function LandingPage() {
                 </span>
               </Link>
             </div>
+
           </div>
 
           <div className="mt-20 flex flex-wrap items-center justify-between gap-4 border-t border-[#0B211B]/20 pt-5">
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">
               SHOPKART®
             </p>
+
             <p className="text-[10px] uppercase tracking-[0.2em] text-[#52635A]">
               Discover more. Shop differently.
             </p>
+
             <Link
               to="/home"
               className="text-xs font-bold transition hover:text-[#047857]"
@@ -467,17 +472,28 @@ function LandingPage() {
               Enter the shop ↗
             </Link>
           </div>
+
         </div>
       </section>
 
       <style>{`
         @keyframes marquee {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-50%);
+          }
+        }
+
+        html {
+          scroll-behavior: smooth;
         }
 
         @media (prefers-reduced-motion: reduce) {
-          *, *::before, *::after {
+          *,
+          *::before,
+          *::after {
             animation-duration: 0.01ms !important;
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
@@ -485,6 +501,7 @@ function LandingPage() {
           }
         }
       `}</style>
+
     </main>
   );
 }
