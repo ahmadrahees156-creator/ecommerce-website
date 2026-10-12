@@ -14,13 +14,24 @@ function LandingNavbar() {
         </Link>
 
         <div className="hidden items-center gap-7 text-sm font-medium text-[#064e3b] md:flex">
-          <a href="#story" className="transition hover:text-[#047857]">
+          <a
+            href="/#story"
+            className="transition hover:text-[#047857]"
+          >
             Our Story
           </a>
-          <a href="#collections" className="transition hover:text-[#047857]">
+
+          <a
+            href="/#collections"
+            className="transition hover:text-[#047857]"
+          >
             Collections
           </a>
-          <Link to="/about" className="transition hover:text-[#047857]">
+
+          <Link
+            to="/about"
+            className="transition hover:text-[#047857]"
+          >
             About
           </Link>
         </div>

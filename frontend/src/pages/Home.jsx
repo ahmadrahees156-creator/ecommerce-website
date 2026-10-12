@@ -100,47 +100,60 @@ function Home() {
         category?.categoryName ??
         'Category'
 
+  // Category-specific Unsplash images
   const getCategoryImage = (category, index) => {
-    const name = getCategoryName(category).toLowerCase()
+    const name = getCategoryName(category).toLowerCase().trim()
 
-    if (name.includes('electronic') || name.includes('gadget')) {
-      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'
-    }
-
-    if (
-      name.includes('fashion') ||
-      name.includes('cloth') ||
-      name.includes('men') ||
-      name.includes('women') ||
-      name.includes('apparel')
-    ) {
-      return 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80'
-    }
-
-    if (
-      name.includes('home') ||
-      name.includes('living') ||
-      name.includes('decor') ||
-      name.includes('furniture')
-    ) {
-      return 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80'
-    }
-
-    if (
-      name.includes('accessor') ||
-      name.includes('watch') ||
-      name.includes('jewel')
-    ) {
-      return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80'
-    }
-
-    const fallbackImages = [
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+    const categoryImages = [
+      {
+        keywords: ['bag', 'luggage', 'backpack', 'purse'],
+        image:
+          'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['beauty', 'makeup', 'cosmetic', 'skincare'],
+        image:
+          'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['camera', 'photography'],
+        image:
+          'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['cloth', 'apparel', 'men', 'women', 'wear'],
+        image:
+          'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['computer', 'laptop', 'notebook', 'pc'],
+        image:
+          'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['electronic', 'gadget', 'headphone', 'audio'],
+        image:
+          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['fashion', 'style', 'accessor', 'watch', 'jewel'],
+        image:
+          'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=85',
+      },
+      {
+        keywords: ['home', 'living', 'decor', 'furniture', 'interior'],
+        image:
+          'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85',
+      },
     ]
 
+    const match = categoryImages.find(({ keywords }) =>
+      keywords.some((keyword) => name.includes(keyword))
+    )
+
+    if (match) return match.image
+
+    const fallbackImages = categoryImages.map(({ image }) => image)
     return fallbackImages[index % fallbackImages.length]
   }
 
@@ -155,11 +168,8 @@ function Home() {
             darkMode ? 'bg-[#181B19]' : 'bg-[#E8EDE2]'
           } lg:grid-cols-2`}
         >
-          {/* Left content */}
           <div className="relative z-10 flex flex-col justify-center p-7 sm:p-12 lg:p-16">
-            <p
-              className={`mb-5 text-xs font-semibold uppercase tracking-[0.25em] ${theme.accent}`}
-            >
+            <p className={`mb-5 text-xs font-semibold uppercase tracking-[0.25em] ${theme.accent}`}>
               ShopKart · Better choices, brighter days
             </p>
 
@@ -170,9 +180,7 @@ function Home() {
               </span>
             </h1>
 
-            <p
-              className={`mt-6 max-w-lg text-base leading-7 sm:text-lg ${theme.muted}`}
-            >
+            <p className={`mt-6 max-w-lg text-base leading-7 sm:text-lg ${theme.muted}`}>
               Thoughtfully selected products for your everyday life. Discover
               something worth bringing home.
             </p>
@@ -187,7 +195,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Right-side homepage image - circle removed */}
           <div
             className={`relative flex min-h-[300px] items-center justify-center overflow-hidden p-5 sm:min-h-[420px] sm:p-8 lg:min-h-[520px] ${
               darkMode ? 'bg-[#202720]' : 'bg-[#E8EDE2]'
@@ -208,9 +215,7 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p
-              className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
-            >
+            <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
               Find your style
             </p>
             <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
@@ -245,13 +250,16 @@ function Home() {
                       : 'hover:border-[#047857]/50'
                   }`}
                 >
-                  <div
-                    className={`relative h-36 overflow-hidden sm:h-48 ${theme.surface}`}
-                  >
+                  <div className={`relative h-36 overflow-hidden sm:h-48 ${theme.surface}`}>
                     <img
                       src={image}
                       alt={name}
                       loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.src =
+                          'https://placehold.co/800x500/F1F0E8/173D30?text=' +
+                          encodeURIComponent(name)
+                      }}
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                     />
 
@@ -276,9 +284,7 @@ function Home() {
             })}
           </div>
         ) : (
-          <p
-            className={`rounded-2xl border p-6 text-sm ${theme.border} ${theme.muted}`}
-          >
+          <p className={`rounded-2xl border p-6 text-sm ${theme.border} ${theme.muted}`}>
             Categories will appear here when available.
           </p>
         )}
@@ -293,9 +299,7 @@ function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p
-                className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
-              >
+              <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
                 The latest edit
               </p>
               <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
@@ -411,9 +415,7 @@ function Home() {
       {/* Brand promise */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-9 text-center">
-          <p
-            className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
-          >
+          <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
             The ShopKart difference
           </p>
           <h2 className="mt-3 font-serif text-3xl sm:text-4xl">
@@ -446,9 +448,7 @@ function Home() {
               key={item.number}
               className={`rounded-2xl border p-6 sm:p-7 ${theme.card}`}
             >
-              <span
-                className={`text-xs font-semibold tracking-[0.2em] ${theme.accent}`}
-              >
+              <span className={`text-xs font-semibold tracking-[0.2em] ${theme.accent}`}>
                 {item.number}
               </span>
               <h3 className="mt-5 text-lg font-semibold">{item.title}</h3>
@@ -467,9 +467,7 @@ function Home() {
             darkMode ? 'bg-[#202720]' : 'bg-[#E8EDE2]'
           }`}
         >
-          <p
-            className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}
-          >
+          <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${theme.accent}`}>
             Your next find awaits
           </p>
 
