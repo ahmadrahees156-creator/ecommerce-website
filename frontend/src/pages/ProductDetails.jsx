@@ -10,6 +10,10 @@ import {
   getWishlist,
   removeFromWishlist,
 } from '../services/wishlistApi'
+import {
+  getProductReviews,
+  addProductReview,
+} from '../services/reviewApi'
 
 function ProductDetails() {
   const { id } = useParams()
@@ -27,6 +31,14 @@ function ProductDetails() {
   const [wishlistLoading, setWishlistLoading] = useState(false)
   const [cartMessage, setCartMessage] = useState('')
   const [activeTab, setActiveTab] = useState('description')
+
+  const [reviews, setReviews] = useState([])
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState('')
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewsLoading, setReviewsLoading] = useState(true)
+  const [reviewError, setReviewError] = useState('')
+  const [reviewMessage, setReviewMessage] = useState('')
 
   const c = darkMode
     ? {
@@ -78,7 +90,9 @@ function ProductDetails() {
           ...(Array.isArray(item.images) ? item.images : []),
           item.imageUrl,
           item.image,
-        ].filter((image) => typeof image === 'string' && image.trim())
+        ].filter(
+          (image) => typeof image === 'string' && image.trim()
+        )
 
         setSelectedImage(images[0] || '')
       } catch (err) {
@@ -129,7 +143,6 @@ function ProductDetails() {
           )
         }
       } catch {
-        // Keep the page usable if wishlist status cannot be loaded.
       }
     }
 
@@ -139,6 +152,42 @@ function ProductDetails() {
       cancelled = true
     }
   }, [id, isAuthenticated])
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadReviews = async () => {
+      try {
+        setReviewsLoading(true)
+        setReviewError('')
+
+        const data = await getProductReviews(id)
+
+        if (!cancelled) {
+          const list = Array.isArray(data)
+            ? data
+            : data?.reviews ?? []
+
+          setReviews(list)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setReviewError(
+            err.response?.data?.message ||
+              'Unable to load reviews.'
+          )
+        }
+      } finally {
+        if (!cancelled) setReviewsLoading(false)
+      }
+    }
+
+    loadReviews()
+
+    return () => {
+      cancelled = true
+    }
+  }, [id])
 
   const images = product
     ? [
@@ -156,15 +205,29 @@ function ProductDetails() {
   const name = product?.name ?? product?.title ?? 'Product'
   const price = Number(product?.price ?? 0)
   const description =
-    product?.description || 'Discover the details of this ShopKart product.'
+    product?.description ||
+    'Discover the details of this ShopKart product.'
+
   const category =
     typeof product?.category === 'object'
       ? product.category?.name ?? product.category?.title
       : product?.category
 
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce(
+            (total, review) =>
+              total + (Number(review.rating) || 0),
+            0
+          ) / reviews.length
+        ).toFixed(1)
+      : '0.0'
+
   const handleAddToCart = async () => {
     try {
       setCartMessage('')
+
       await addToCart({
         id: product._id ?? product.id,
         name,
@@ -173,10 +236,12 @@ function ProductDetails() {
         image: selectedImage,
         quantity,
       })
+
       setCartMessage('Product added to your cart successfully!')
     } catch (err) {
       window.alert(
-        err.response?.data?.message || 'Unable to add product to cart.'
+        err.response?.data?.message ||
+          'Unable to add product to cart.'
       )
     }
   }
@@ -199,10 +264,55 @@ function ProductDetails() {
       }
     } catch (err) {
       window.alert(
-        err.response?.data?.message || 'Unable to update wishlist.'
+        err.response?.data?.message ||
+          'Unable to update wishlist.'
       )
     } finally {
       setWishlistLoading(false)
+    }
+  }
+
+  const handleSubmitReview = async () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+
+    if (rating < 1 || rating > 5) {
+      setReviewError('Please select a rating from 1 to 5.')
+      return
+    }
+
+    if (!comment.trim()) {
+      setReviewError('Please write a review comment.')
+      return
+    }
+
+    try {
+      setReviewLoading(true)
+      setReviewError('')
+      setReviewMessage('')
+
+      await addProductReview(id, rating, comment.trim())
+
+      const data = await getProductReviews(id)
+      const list = Array.isArray(data)
+        ? data
+        : data?.reviews ?? []
+
+      setReviews(list)
+      setRating(0)
+      setComment('')
+      setReviewMessage(
+        'Your review has been submitted successfully!'
+      )
+    } catch (err) {
+      setReviewError(
+        err.response?.data?.message ||
+          'Unable to submit review.'
+      )
+    } finally {
+      setReviewLoading(false)
     }
   }
 
@@ -214,8 +324,12 @@ function ProductDetails() {
       >
         <div
           className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: c.accent, borderTopColor: 'transparent' }}
+          style={{
+            borderColor: c.accent,
+            borderTopColor: 'transparent',
+          }}
         />
+
         <p className="mt-5" style={{ color: c.muted }}>
           Loading product details...
         </p>
@@ -243,7 +357,10 @@ function ProductDetails() {
         <Link
           to="/products"
           className="mt-6 inline-block rounded-lg px-5 py-3 text-sm font-semibold"
-          style={{ backgroundColor: c.button, color: c.buttonText }}
+          style={{
+            backgroundColor: c.button,
+            color: c.buttonText,
+          }}
         >
           Back to Products
         </Link>
@@ -313,7 +430,10 @@ function ProductDetails() {
 
               <span
                 className="absolute left-4 top-4 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider"
-                style={{ backgroundColor: c.card, color: c.accent }}
+                style={{
+                  backgroundColor: c.card,
+                  color: c.accent,
+                }}
               >
                 ShopKart Collection
               </span>
@@ -331,7 +451,9 @@ function ProductDetails() {
                     style={{
                       backgroundColor: c.image,
                       borderColor:
-                        selectedImage === image ? c.accent : c.border,
+                        selectedImage === image
+                          ? c.accent
+                          : c.border,
                     }}
                   >
                     <img
@@ -370,7 +492,10 @@ function ProductDetails() {
 
               <span
                 className="rounded-full px-3 py-1 text-xs font-medium"
-                style={{ backgroundColor: c.soft, color: c.accent }}
+                style={{
+                  backgroundColor: c.soft,
+                  color: c.accent,
+                }}
               >
                 ShopKart selection
               </span>
@@ -385,7 +510,10 @@ function ProductDetails() {
 
             <div
               className="mt-6 grid grid-cols-2 gap-3 rounded-xl border p-4"
-              style={{ borderColor: c.border, backgroundColor: c.card }}
+              style={{
+                borderColor: c.border,
+                backgroundColor: c.card,
+              }}
             >
               <div>
                 <p className="text-xs" style={{ color: c.muted }}>
@@ -422,7 +550,9 @@ function ProductDetails() {
               >
                 <button
                   type="button"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  onClick={() =>
+                    setQuantity((q) => Math.max(1, q - 1))
+                  }
                   disabled={quantity <= 1}
                   className="h-11 w-12 text-lg disabled:opacity-30"
                   aria-label="Decrease quantity"
@@ -482,7 +612,10 @@ function ProductDetails() {
               <div
                 role="status"
                 className="mt-4 rounded-lg px-4 py-3 text-sm"
-                style={{ backgroundColor: c.soft, color: c.accent }}
+                style={{
+                  backgroundColor: c.soft,
+                  color: c.accent,
+                }}
               >
                 ✓ {cartMessage}
                 <Link to="/cart" className="ml-2 font-bold underline">
@@ -596,6 +729,200 @@ function ProductDetails() {
                     <span className="font-semibold">{value}</span>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section
+          className="mt-8 rounded-2xl border p-5 sm:p-8"
+          style={{
+            backgroundColor: c.card,
+            borderColor: c.border,
+          }}
+        >
+          <h2
+            className="text-2xl font-bold"
+            style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+            }}
+          >
+            Customer Reviews
+          </h2>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="text-3xl font-bold">{averageRating}</span>
+
+            <div>
+              <p className="text-lg" style={{ color: '#F59E0B' }}>
+                {'★'.repeat(Math.round(Number(averageRating)))}
+                {'☆'.repeat(5 - Math.round(Number(averageRating)))}
+              </p>
+
+              <p className="text-xs" style={{ color: c.muted }}>
+                Based on {reviews.length}{' '}
+                {reviews.length === 1 ? 'review' : 'reviews'}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="mt-6 border-t pt-6"
+            style={{ borderColor: c.border }}
+          >
+            <h3 className="text-lg font-semibold">Write a Review</h3>
+
+            {!isAuthenticated && (
+              <p className="mt-2 text-sm" style={{ color: c.muted }}>
+                Please log in to submit a review.
+                {' '}
+                <Link
+                  to="/login"
+                  className="font-semibold underline"
+                  style={{ color: c.accent }}
+                >
+                  Login
+                </Link>
+              </p>
+            )}
+
+            <p className="mt-4 text-sm" style={{ color: c.muted }}>
+              Select your rating
+            </p>
+
+            <div className="mt-2 flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  aria-label={`Rate ${star} out of 5`}
+                  aria-pressed={rating === star}
+                  className="text-3xl transition hover:scale-110"
+                  style={{
+                    color:
+                      star <= rating ? '#F59E0B' : c.border,
+                  }}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your experience with this product..."
+              maxLength={500}
+              rows={4}
+              className="mt-4 w-full rounded-xl border p-4 text-sm outline-none"
+              style={{
+                backgroundColor: c.page,
+                color: c.text,
+                borderColor: c.border,
+              }}
+            />
+
+            <p
+              className="mt-1 text-right text-xs"
+              style={{ color: c.muted }}
+            >
+              {comment.length}/500
+            </p>
+
+            {reviewError && (
+              <p role="alert" className="mt-3 text-sm text-red-500">
+                {reviewError}
+              </p>
+            )}
+
+            {reviewMessage && (
+              <p
+                role="status"
+                className="mt-3 text-sm text-green-600"
+              >
+                {reviewMessage}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleSubmitReview}
+              disabled={reviewLoading}
+              className="mt-4 rounded-lg px-6 py-3 text-sm font-bold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                backgroundColor: c.button,
+                color: c.buttonText,
+              }}
+            >
+              {reviewLoading ? 'Submitting...' : 'Submit Review'}
+            </button>
+          </div>
+
+          <div
+            className="mt-8 border-t pt-6"
+            style={{ borderColor: c.border }}
+          >
+            <h3 className="text-lg font-semibold">
+              What customers say
+            </h3>
+
+            {reviewsLoading ? (
+              <p className="mt-4 text-sm" style={{ color: c.muted }}>
+                Loading reviews...
+              </p>
+            ) : reviews.length === 0 ? (
+              <p className="mt-4 text-sm" style={{ color: c.muted }}>
+                No reviews yet. Be the first to review this product!
+              </p>
+            ) : (
+              <div className="mt-5 space-y-5">
+                {reviews.map((review) => {
+                  const stars = Math.max(
+                    0,
+                    Math.min(5, Number(review.rating) || 0)
+                  )
+
+                  return (
+                    <article
+                      key={review._id ?? `${review.user?._id}-${review.createdAt}`}
+                      className="border-b pb-5 last:border-b-0"
+                      style={{ borderColor: c.border }}
+                    >
+                      <p className="font-semibold">
+                        {review.user?.name ??
+                          review.userName ??
+                          'Customer'}
+                      </p>
+
+                      <p
+                        className="mt-1 text-lg"
+                        style={{ color: '#F59E0B' }}
+                      >
+                        {'★'.repeat(stars)}
+                        {'☆'.repeat(5 - stars)}
+                      </p>
+
+                      <p
+                        className="mt-2 whitespace-pre-wrap text-sm leading-6"
+                        style={{ color: c.muted }}
+                      >
+                        {review.comment}
+                      </p>
+
+                      {review.createdAt && (
+                        <p
+                          className="mt-2 text-xs"
+                          style={{ color: c.muted }}
+                        >
+                          {new Date(
+                            review.createdAt
+                          ).toLocaleDateString('en-IN')}
+                        </p>
+                      )}
+                    </article>
+                  )
+                })}
               </div>
             )}
           </div>
